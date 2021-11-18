@@ -11,6 +11,7 @@
 class TID_Generator : public Generator{
 public:
     TID_Generator(const Distribution & dist);
+    ~TID_Generator();
     int32_t GenerateValue(double alpha) override;
 };
 

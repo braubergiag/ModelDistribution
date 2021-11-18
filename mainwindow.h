@@ -18,14 +18,17 @@ public:
     ~MainWindow();
 
     QChartView *chartView() const;
+    void load();
 
 private slots:
 
 
     void on_actionCreate_triggered();
 
-
+signals:
+     void signalChart(QChartView * chart);
 private:
+    QWidget * widget = nullptr;
     QChartView * m_chartView = nullptr;
     Ui::MainWindow *ui;
 

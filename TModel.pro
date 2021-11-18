@@ -14,10 +14,10 @@ SOURCES += \
     TID_Generator.cpp \
     TISM_Generator.cpp \
     dialog_model.cpp \
+    dialog_plevels.cpp \
     main.cpp \
     mainwindow.cpp \
-    probdist.cpp \
-    qcustomplot.cpp
+    probdist.cpp
 
 HEADERS += \
     Distribution.h \
@@ -26,12 +26,13 @@ HEADERS += \
     TID_Generator.h \
     TISM_Generator.h \
     dialog_model.h \
+    dialog_plevels.h \
     mainwindow.h \
-    probdist.h \
-    qcustomplot.h
+    probdist.h
 
 FORMS += \
     dialog_model.ui \
+    dialog_plevels.ui \
     mainwindow.ui
 
 # Default rules for deployment.

@@ -1,13 +1,16 @@
-//
-// Created by glushkov on 06.11.2021.
-//
 
 #include "TISM_Generator.h"
 
 
 TISM_Generator::TISM_Generator(const Distribution & dist) : Generator (dist){
-    GenerateSumProbabilities();
     SortProbsDescend();
+    GenerateSumProbabilities();
+
+}
+
+TISM_Generator::~TISM_Generator()
+{
+    std::cout << "TISM_Generator destructor was called\n ";
 };
 
 

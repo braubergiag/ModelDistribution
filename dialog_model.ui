@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Введите объем выборки:</string>
+        <string>Введите объем выборки(100M max):</string>
        </property>
       </widget>
      </item>
@@ -39,7 +39,7 @@
      <item>
       <widget class="QLineEdit" name="lbSampleSize">
        <property name="text">
-        <string>100</string>
+        <string>100000</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -58,6 +58,9 @@
        <widget class="QRadioButton" name="rbTIS">
         <property name="text">
          <string>Table Inverse Sequential</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -79,7 +82,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="txtProbs"/>
+    <widget class="QLineEdit" name="txtProbs">
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

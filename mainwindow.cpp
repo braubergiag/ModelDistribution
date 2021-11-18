@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -33,10 +35,14 @@ void MainWindow::on_actionCreate_triggered()
 {
 
     Dialog_model * dlg = new Dialog_model(this);
+    if (m_chartView) {
+        ui->verticalLayout_2->removeWidget(m_chartView);
+    }
     dlg->exec();
     m_chartView = dlg->chartHistogram();
 
-    delete dlg;
+    load();
+    //delete dlg;
 
 
 
@@ -46,5 +52,12 @@ void MainWindow::on_actionCreate_triggered()
 QChartView *MainWindow::chartView() const
 {
     return m_chartView;
+}
+
+void MainWindow::load()
+{
+
+
+    ui->verticalLayout_2->addWidget(m_chartView);
 }
 

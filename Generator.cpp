@@ -6,9 +6,12 @@
 Generator::Generator(const Distribution & dist) : m_dist(dist),m_distSize(m_dist.getDistributionSize()) {
 
     Initialize();
-    GenerateSumProbabilities();
+
 }
 
+Generator::~Generator(){
+    std::cout << "Generate destructor was called\n ";
+}
 
 
 void Generator::Initialize() {

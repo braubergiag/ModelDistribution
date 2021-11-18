@@ -6,7 +6,6 @@
 #define COUSERASPECYELLOW_GENERATOR_H
 #include <vector>
 #include <iostream>
-#include <vector>
 #include <algorithm>
 #include <random>
 #include <chrono>
@@ -19,8 +18,10 @@
 class Generator {
 public:
     Generator(const Distribution & dist);
+    virtual ~Generator() = 0;
     Distribution GetDistribution() {return  m_dist;}
     int32_t GetDistSize() const {return m_distSize;}
+
     virtual int32_t GenerateValue(double alpha) = 0;
 protected:
 

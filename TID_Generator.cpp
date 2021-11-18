@@ -4,7 +4,15 @@
 
 #include "TID_Generator.h"
 #include "Generator.h"
-TID_Generator::TID_Generator(const Distribution & dist) : Generator(dist){};
+TID_Generator::TID_Generator(const Distribution & dist) : Generator(dist){
+    GenerateSumProbabilities();
+}
+
+TID_Generator::~TID_Generator()
+{
+     std::cout << "TID_Generator destructor was called\n ";
+
+};
 int32_t TID_Generator:: GenerateValue(double alpha)  {
     int i = 0, k = 0, j = m_distSize - 1;
     while (i < j) {

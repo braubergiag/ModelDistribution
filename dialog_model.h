@@ -14,7 +14,7 @@
 #include <QChartView>
 
 #include "Histogram.h"
-
+#include "Distribution.h"
 #include "Generator.h"
 #include "TID_Generator.h"
 #include "TISM_Generator.h"
@@ -46,8 +46,12 @@ private slots:
 
     void on_buttonBox_rejected();
 
-private:
 
+
+    void on_lbSampleSize_editingFinished();
+
+private:
+    bool checkSamleSize() const;
     QChartView * m_chartHistogram;
     Ui::Dialog_model *ui;
 };

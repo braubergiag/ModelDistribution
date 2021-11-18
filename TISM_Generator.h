@@ -11,6 +11,7 @@
 class TISM_Generator : public Generator {
 public:
     TISM_Generator(const Distribution & dist);
+    ~TISM_Generator();
     int32_t GenerateValue(double alpha) override ;
 
 
