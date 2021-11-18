@@ -30,7 +30,7 @@ public:
     explicit Dialog_model(QWidget *parent = nullptr);
     ~Dialog_model();
     QVector<double> getD0();
-    QVector<double> getD1();
+
 
      Histogram histogram() const;
 

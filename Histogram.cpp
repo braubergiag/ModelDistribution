@@ -1,26 +1,11 @@
 
 #include <cassert>
 #include "Histogram.h"
- Histogram::Histogram(Generator *  sampleGenerator,Distribution d0, size_t sampleSize):
+ Histogram::Histogram(Generator *  sampleGenerator, size_t sampleSize):
     m_sampleGenerator(sampleGenerator),
-    m_sampleSize(sampleSize),
-    m_distribution(d0),
-    m_distSize(d0.getDistributionSize())
- {
-
-        m_seed = std::chrono::system_clock::now().time_since_epoch().count();
-        m_generator.seed(m_seed);
-        m_uniform = new std::uniform_real_distribution<double> (0.0,1.0);
+    m_sampleSize(sampleSize){};
 
 
-        int32_t m_plevels_N = 20;
-        m_plevels.resize(m_plevels_N);
-        m_distribSizeMerged = m_distSize;
-        m_df = m_distSize - 1;
-         CalculateExpectedFrequency();
-
-
-};
 void Histogram::GenerateSample()  {
     double  alpha = 0.0;
     m_observed.clear();
@@ -51,18 +36,10 @@ void Histogram::calcChi(){
     }
 
 
-
-
-
     CHI(1, m_distSize - 1, m_chiValue, m_pvalue);
-//    int f = floor(plevel * 100 / 10);
-//    int s = ceil(static_cast<int>(floor(plevel * 100)) % 10);
-//    ++m_plevels[f+s];
-//    if (plevel < alpha){
-//        m_alpha += 1;
-//    }
-    m_mean += m_chiValue;
-    //std::cout << "Chi value : " << m_chiValue_2 << " m_plevel " << plevel << std::endl;
+
+//    m_mean += m_chiValue;
+
 }
 
 void Histogram::mergeExeptectedValues()
@@ -134,6 +111,42 @@ int32_t Histogram::df() const
     return m_df;
 }
 
+const Distribution &Histogram::d0() const
+{
+    return m_d0;
+}
+
+void Histogram::setD0(const Distribution &newD0)
+{
+    m_d0 = newD0;
+}
+
+
+
+void Histogram::setDf(int32_t newDf)
+{
+    m_df = newDf;
+}
+
+void Histogram::setDistSize(int32_t newDistSize)
+{
+    m_distSize = newDistSize;
+}
+
+void Histogram::Init()
+{
+
+    if (m_d0.getDistributionSize() != 0) {
+        m_distSize = m_d0.getDistributionSize();
+        CalculateExpectedFrequency();
+    }
+
+
+    m_seed = std::chrono::system_clock::now().time_since_epoch().count();
+    m_generator.seed(m_seed);
+    m_uniform = new std::uniform_real_distribution<double> (0.0,1.0);
+}
+
 
 void Histogram::PrintObservedFreq(){
     std::cout << "ObservedFreq" << std::endl;
@@ -162,7 +175,7 @@ void Histogram::PrintExpectedMergedFreq(){
 void Histogram::CalculateExpectedFrequency(){
 
     for (size_t i = 0; i < m_distSize; ++i){
-        m_expected[i] = m_sampleSize * m_distribution.getProbAt(i);
+        m_expected[i] = m_sampleSize * m_d0.getProbAt(i);
     }
 }
 

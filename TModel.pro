@@ -17,6 +17,7 @@ SOURCES += \
     dialog_plevels.cpp \
     main.cpp \
     mainwindow.cpp \
+    model.cpp \
     probdist.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     dialog_model.h \
     dialog_plevels.h \
     mainwindow.h \
+    model.h \
     probdist.h
 
 FORMS += \

@@ -49,11 +49,11 @@ QChartView * Dialog_model::createChartHistogram(Histogram &histogram)
                     *set0 << item.second;
                }
                for (const  auto& item : histogram.expectedMerged()){
-                   *set1 << static_cast<uint64_t>(item.second);
+                   *set1 << item.second;
                }
 
-               histogram.PrintExpectedMergedFreq();
-               histogram.PrintObservedMergedFreq();
+//               histogram.PrintExpectedMergedFreq();
+//               histogram.PrintObservedMergedFreq();
 
 
 
@@ -126,7 +126,9 @@ void Dialog_model::on_buttonBox_accepted()
         qDebug() <<"You choose : " << ui->rbTIS->text();
         generator = new  TISM_Generator(dist);
     }
-    Histogram histogram(generator,dist,sampleSize);
+    Histogram histogram(generator,sampleSize);
+    histogram.setD0(dist);
+    histogram.Init();
     m_chartHistogram = createChartHistogram(histogram);
 
     accept();

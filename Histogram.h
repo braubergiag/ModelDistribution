@@ -9,12 +9,11 @@
 
 class Histogram {
 public:
-    Histogram(Generator *  sampleGenerator,Distribution d0,size_t sampleSize);
+    Histogram(Generator *  sampleGenerator,size_t sampleSize);
 
     void GenerateSample();
     void calcChi();
-    Generator *  m_sampleGenerator;
-    Distribution m_d;
+
 
     void PrintObservedFreq();
 
@@ -26,12 +25,7 @@ public:
     void mergeExeptectedValues();
     int32_t GetObservedAt(int i ) const {return m_observedMerged.at(i);}
     int32_t GetExpectedAt(int i ) const {return m_expectedMerged.at(i);}
-
-
-
-
     double MeanChiValue() const {return m_mean;}
-
     int32_t distSize() const;
      int32_t distribSizeMerged() const;
     uint64_t MaxFrequency() const;
@@ -47,21 +41,32 @@ public:
 
     int32_t df() const;
 
+    const Distribution &d0() const;
+    void setD0(const Distribution &newD0);
+
+
+
+
+    void setDf(int32_t newDf);
+
+    void setDistSize(int32_t newDistSize);
+    void Init();
+
 private:
     // Генератор псевдослучайных чисел
     unsigned m_seed;
     std::mt19937 m_generator;
     std::uniform_real_distribution<double> * m_uniform;
 
-
-    Distribution m_distribution;
+    Generator *  m_sampleGenerator;
+    Distribution m_d0;
 
     double m_alpha = 0;
     double m_chiValue = 0;
     double m_pvalue = 0;
     double m_mean = 0;
     int32_t m_df = 0;
-    int32_t m_distribSizeMerged;
+    int32_t m_distribSizeMerged = 0;
     int32_t m_distSize = 0;
     int32_t m_sampleSize = 0;
 

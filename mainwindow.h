@@ -5,6 +5,7 @@
 #include <QDialog>
 //#include <QChartView>
 #include "dialog_model.h"
+#include "dialog_plevels.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -19,17 +20,23 @@ public:
 
     QChartView *chartView() const;
     void load();
+    void loadPlevelsChart() const;
+
+    QChartView *chartPlevels() const;
 
 private slots:
 
 
     void on_actionCreate_triggered();
 
+    void on_actionGenerate_P_Levels_triggered();
+
 signals:
      void signalChart(QChartView * chart);
 private:
     QWidget * widget = nullptr;
     QChartView * m_chartView = nullptr;
+    QChartView * m_chartPlevels = nullptr;
     Ui::MainWindow *ui;
 
 

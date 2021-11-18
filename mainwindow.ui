@@ -66,10 +66,17 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionCreate"/>
+   <addaction name="separator"/>
+   <addaction name="actionGenerate_P_Levels"/>
   </widget>
   <action name="actionCreate">
    <property name="text">
     <string>Generate Sample</string>
+   </property>
+  </action>
+  <action name="actionGenerate_P_Levels">
+   <property name="text">
+    <string>Generate P-Levels</string>
    </property>
   </action>
  </widget>
