@@ -35,10 +35,6 @@ public:
 
      Histogram histogram() const;
 
-
-
-     QChartView  *createChartHistogram(Histogram *  histogram);
-     QChartView *chartHistogram() const;
      void loadModelConfig(Model * model);
 
 private slots:
@@ -48,7 +44,7 @@ private slots:
 
 private:
     bool checkSamleSize() const;
-    QChartView * m_chartHistogram;
+    Model * m_model = nullptr;
 
     Ui::Dialog_model *ui;
 };

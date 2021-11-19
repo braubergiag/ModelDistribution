@@ -139,6 +139,10 @@ void Model::InitModel()
 
 void Model::InitHistogram()
 {
+    if (m_histogram){
+        delete m_histogram;
+    }
+
     if (d0.getDistributionSize() != 0  && m_generator){
          m_histogram = new Histogram(m_generator,m_sampleSize);
          m_histogram->setD0(d0);

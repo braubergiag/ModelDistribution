@@ -25,21 +25,18 @@ class Dialog_Plevels : public QDialog
     Q_OBJECT
 
 public:
-    explicit Dialog_Plevels(QWidget *parent = nullptr);
+    explicit Dialog_Plevels(QWidget *parent = nullptr, Model * model = nullptr);
     ~Dialog_Plevels();
 
     std::vector<double> getD0();
-//    QVector<double> getD1();
 
-    QChartView * chartPlevels() const;
-    QChartView * createPlevelsChart(Model * model);
 
 private slots:
     void on_buttonBox_accepted();
 
 private:
     bool checkSamleSize() const;
-    QChartView * m_chartPlevels = nullptr;
+    Model * m_model = nullptr;
     Ui::Dialog_Plevels *ui;
 };
 

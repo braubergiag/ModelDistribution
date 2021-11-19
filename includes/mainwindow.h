@@ -19,12 +19,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QChartView *chartView() const;
+
     void load();
     void loadPlevelsChart() const;
 
+    QChartView *chartView() const;
     QChartView *chartPlevels() const;
     QChartView * createChartHistogram(Histogram * histogram);
+    QChartView * createPlevelsChart(Model  * model);
     void clearLayout();
 
 private slots:
@@ -37,10 +39,9 @@ private slots:
 signals:
      void signalChart(QChartView * chart);
 private:
-    QWidget * widget = nullptr;
     QChartView * m_chartSampleHistogram = nullptr;
     QChartView * m_chartPlevels = nullptr;
-    Model * model = nullptr;
+    Model * m_model = nullptr;
     Ui::MainWindow *ui;
 
 

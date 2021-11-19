@@ -1,9 +1,10 @@
 #include "dialog_plevels.h"
 #include "ui_dialog_plevels.h"
 
-Dialog_Plevels::Dialog_Plevels(QWidget *parent) :
+Dialog_Plevels::Dialog_Plevels(QWidget *parent,Model * model) :
     QDialog(parent),
-    ui(new Ui::Dialog_Plevels)
+    ui(new Ui::Dialog_Plevels),
+  m_model(model)
 {
     ui->setupUi(this);
 }
@@ -34,77 +35,8 @@ std::vector<double> Dialog_Plevels::getD0()
 
 
 
-QChartView *Dialog_Plevels::chartPlevels() const
-{
-    return m_chartPlevels;
-}
-
-QChartView *Dialog_Plevels::createPlevelsChart(Model  * model)
-
-{
 
 
-    QBarSet *set0 = new QBarSet("Observed Plevel");
-    QBarSet *set1 = new QBarSet("Expected Plevel");
-     const uint64_t maxYValue = 1.1;
-
-
-     for (const  auto& observedPlevel : model->plevelObservedCDF()){
-         *set0 << observedPlevel;
-     }
-
-     for (const  auto& expectedPlevel : model->plevelsInteravals()){
-         *set1 << expectedPlevel;
-     }
-
-
-
-
-     QBarSeries *series = new QBarSeries();
-     series->append(set0);
-
-     series->append(set1);
-
-
-
-     QChart *chart = new QChart();
-
-
-
-
-
-     chart->addSeries(series);
-     chart->setTitle("Plevels CDFs");
-     chart->setAnimationOptions(QChart::SeriesAnimations);
-     chart->setAnimationOptions(QChart::GridAxisAnimations);
-
-
-     QStringList categories;
-
-     for (const  auto& item : model->plevelsInteravals()){
-         categories << QString::number(item);
-     }
-
-
-     QBarCategoryAxis *axisX = new QBarCategoryAxis();
-     axisX->append(categories);
-     chart->addAxis(axisX, Qt::AlignBottom);
-     series->attachAxis(axisX);
-
-     QValueAxis *axisY = new QValueAxis();
-
-     axisY->setRange(0,static_cast<uint64_t>(maxYValue));
-     chart->addAxis(axisY, Qt::AlignLeft);
-     series->attachAxis(axisY);
-
-     chart->legend()->setVisible(true);
-     chart->legend()->setAlignment(Qt::AlignBottom);
-
-
-     QChartView *chartView = new QChartView(chart);
-     chartView->setRenderHint(QPainter::Antialiasing);
-     return  chartView;
-}
 
 void Dialog_Plevels::on_buttonBox_accepted()
 {
@@ -125,21 +57,15 @@ void Dialog_Plevels::on_buttonBox_accepted()
         return;
     }
 
-    Model * model;
-    model = new Model(generator);
-    model->setSampleSize(sampleSize);
-    model->setD0(Distribution(getD0()));
+    m_model->setGenerator(generator);
+    m_model->setSampleSize(sampleSize);
+    m_model->setD0(Distribution(getD0()));
 
 
 
     uint32_t plevelsSize = ui->lbPlevelsSize->text().toUInt();
-    model->setPlevelsSize(plevelsSize);
-    model->InitHistogram();
-    model->InitPlevelsIntervals();
-    model->createPlevelsSample();
-    model->PrintPlevels();
-    m_chartPlevels = createPlevelsChart(model);
-    delete model;
+    m_model->setPlevelsSize(plevelsSize);
+
     accept();
 }
 

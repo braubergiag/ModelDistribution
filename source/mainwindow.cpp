@@ -22,11 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
     uint64_t demoSampleSize = 10000;
     Distribution d0({0.1,0.2,0.3,0.4});
     Generator * generator = new TID_Generator(d0);
-    model = new Model(generator);
-    model->setSampleSize(demoSampleSize);
-    model->setD0(d0);
-    model->InitHistogram();
-    m_chartSampleHistogram = createChartHistogram(model->histogram());
+    m_model = new Model(generator);
+    m_model->setSampleSize(demoSampleSize);
+    m_model->setD0(d0);
+    m_model->InitHistogram();
+    m_chartSampleHistogram = createChartHistogram(m_model->histogram());
     load();
 
 }
@@ -34,7 +34,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 
 {
-    delete model;
+    delete m_model;
+    delete m_chartPlevels;
+    delete m_chartSampleHistogram;
     delete ui;
 }
 
@@ -55,11 +57,6 @@ QChartView * MainWindow::createChartHistogram(Histogram * histogram)
     for (const  auto& item : histogram->expectedMerged()){
         *set1 << item.second;
     }
-
-
-
-
-
 
 
     QBarSeries *series = new QBarSeries();
@@ -108,15 +105,83 @@ QChartView * MainWindow::createChartHistogram(Histogram * histogram)
     return  chartView;
 }
 
+QChartView *MainWindow::createPlevelsChart(Model  * model)
+
+{
+
+
+    QBarSet *set0 = new QBarSet("Observed Plevel");
+    QBarSet *set1 = new QBarSet("Expected Plevel");
+     const uint64_t maxYValue = 1.1;
+
+
+     for (const  auto& observedPlevel : model->plevelObservedCDF()){
+         *set0 << observedPlevel;
+     }
+
+     for (const  auto& expectedPlevel : model->plevelsInteravals()){
+         *set1 << expectedPlevel;
+     }
+
+
+
+
+
+     QBarSeries *series = new QBarSeries();
+     series->append(set0);
+     series->append(set1);
+
+
+
+     QChart *chart = new QChart();
+
+
+
+
+
+     chart->addSeries(series);
+     chart->setTitle("Plevels CDFs");
+     ui->txtDistributionInfo->setText("");
+     chart->setAnimationOptions(QChart::SeriesAnimations);
+     chart->setAnimationOptions(QChart::GridAxisAnimations);
+
+
+     QStringList categories;
+
+     for (const  auto& item : model->plevelsInteravals()){
+         categories << QString::number(item);
+     }
+
+
+     QBarCategoryAxis *axisX = new QBarCategoryAxis();
+     axisX->append(categories);
+     chart->addAxis(axisX, Qt::AlignBottom);
+     series->attachAxis(axisX);
+
+     QValueAxis *axisY = new QValueAxis();
+
+     axisY->setRange(0,static_cast<uint64_t>(maxYValue));
+     chart->addAxis(axisY, Qt::AlignLeft);
+     series->attachAxis(axisY);
+
+     chart->legend()->setVisible(true);
+     chart->legend()->setAlignment(Qt::AlignBottom);
+
+
+     QChartView *chartView = new QChartView(chart);
+     chartView->setRenderHint(QPainter::Antialiasing);
+     return  chartView;
+}
 
 void MainWindow::on_actionCreate_triggered()
 {
 
-    Dialog_model * dlg = new Dialog_model(this);
+    Dialog_model * dlg = new Dialog_model(this,m_model);
 
     dlg->exec();
     clearLayout();
-    m_chartSampleHistogram = dlg->chartHistogram();
+    m_model->InitHistogram();
+    m_chartSampleHistogram = createChartHistogram(m_model->histogram());
     if (m_chartSampleHistogram){
         load();
     }
@@ -149,11 +214,14 @@ void MainWindow::loadPlevelsChart() const
 void MainWindow::on_actionGenerate_P_Levels_triggered()
 {
 
-    Dialog_Plevels * dlg = new Dialog_Plevels(this);
+    Dialog_Plevels * dlg = new Dialog_Plevels(this,m_model);
 
     dlg->exec();
     clearLayout();
-    m_chartPlevels = dlg->chartPlevels();
+    m_model->InitHistogram();
+    m_model->InitPlevelsIntervals();
+    m_model->createPlevelsSample();
+    m_chartPlevels = createPlevelsChart(m_model);
     if (m_chartPlevels){
          loadPlevelsChart();
     }
