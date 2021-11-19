@@ -8,35 +8,37 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Distribution.cpp \
-    Generator.cpp \
-    Histogram.cpp \
-    TID_Generator.cpp \
-    TISM_Generator.cpp \
-    dialog_model.cpp \
-    dialog_plevels.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    model.cpp \
-    probdist.cpp
+    source/Distribution.cpp \
+    source/Generator.cpp \
+    source/Histogram.cpp \
+    source/TID_Generator.cpp \
+    source/TISM_Generator.cpp \
+    source/dialog_model.cpp \
+    source/dialog_plevels.cpp \
+    source/main.cpp \
+    source/mainwindow.cpp \
+    source/model.cpp \
+    source/probdist.cpp
 
 HEADERS += \
-    Distribution.h \
-    Generator.h \
-    Histogram.h \
-    TID_Generator.h \
-    TISM_Generator.h \
-    dialog_model.h \
-    dialog_plevels.h \
-    mainwindow.h \
-    model.h \
-    probdist.h
+    includes/Distribution.h \
+     includes/Generator.h \
+     includes/Histogram.h \
+     includes/TID_Generator.h \
+     includes/TISM_Generator.h \
+     includes/dialog_model.h \
+     includes/dialog_plevels.h \
+     includes/mainwindow.h \
+     includes/model.h \
+     includes/probdist.h \
 
 FORMS += \
-    dialog_model.ui \
-    dialog_plevels.ui \
-    mainwindow.ui
+    ui/dialog_model.ui \
+    ui/dialog_plevels.ui \
+    ui/mainwindow.ui
 
+INCLUDEPATH+= includes/
+INCLUDEPATH+= ui/
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
