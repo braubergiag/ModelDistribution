@@ -6,34 +6,31 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>716</width>
-    <height>519</height>
+    <width>576</width>
+    <height>333</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="3">
-      <widget class="QLineEdit" name="lbSampleSize">
-       <property name="text">
-        <string>100</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
+     <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Введите объем выборки(10M max):</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Введите объем выборки p-levels:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="QLineEdit" name="lbPlevelsSize">
        <property name="text">
         <string>1000</string>
@@ -43,10 +40,13 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QLabel" name="label_4">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lbSampleSize">
        <property name="text">
-        <string>Введите объем выборки p-levels:</string>
+        <string>100</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -54,28 +54,44 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
       <string>Выберите метод моделирования:</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QRadioButton" name="rbTIS">
-        <property name="text">
-         <string>Table Inverse Sequential</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="rbTID">
-        <property name="text">
-         <string>Table Inverse Dichotomy</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QRadioButton" name="rbTIS">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>191</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Table Inverse Sequential</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbTID">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>193</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Table Inverse Dichotomy</string>
+      </property>
+     </widget>
     </widget>
    </item>
    <item>
@@ -94,7 +110,7 @@
    <item>
     <widget class="QLineEdit" name="txtProbs">
      <property name="text">
-      <string>0.5,0.5</string>
+      <string>0.1,0.2,0.4,0.3</string>
      </property>
     </widget>
    </item>
