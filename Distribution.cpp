@@ -1,7 +1,12 @@
 
 #include "Distribution.h"
 
-Distribution::Distribution(const QVector<double> & p) :m_p(p){
+const vector<double> &Distribution::p() const
+{
+    return m_p;
+}
+
+Distribution::Distribution(const std::vector<double> & p) :m_p(p){
     NormalizeDistribution();
 };
 

@@ -51,23 +51,28 @@ Histogram *Model::histogram() const
 void Model::createPlevelsSample()
 {
 
+
+    m_plevelObservedCDF.resize(m_plevelsInteravalsSize,0);
+
+    // Здесь вычисляется, сколько значений pvalue попало в каждую ячейку
     for (size_t i = 0; i < m_plevelsSize; ++i){
         m_histogram->calcChi();
         m_currentPvalue = m_histogram->pvalue();
 
        for (size_t j = 0; j < m_plevelsInteravals.size(); ++j) {
-           if (m_currentPvalue < m_plevelsInteravals[j]) {
+           if (m_currentPvalue <= m_plevelsInteravals[j]) {
                ++m_plevelObservedCDF[j];
                break;
            }
        }
     }
 
-
-    qDebug() << "m_plevelObservedFreq \n";
-    for(auto & item : m_plevelObservedCDF ) {
-        qDebug() << "Step: " << item.first << " Value :" << item.second << "\n";
+    // Тест
+    qDebug() << "m_plevelObservedCDF \n";
+    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
+         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDF[i] << "\n";
     }
+
 
     // Нормировка
     for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
@@ -79,10 +84,12 @@ void Model::createPlevelsSample()
         m_plevelObservedCDF[i] += m_plevelObservedCDF[i - 1];
     }
 
+
+
     // Тест
     qDebug() << "m_plevelObservedCDF \n";
-    for(auto & item : m_plevelObservedCDF ) {
-        qDebug() << "Step: " << item.first << " Value :" << item.second << "\n";
+    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
+         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDF[i] << "\n";
     }
 
 
@@ -101,56 +108,7 @@ void Model::setSampleSize(uint64_t newSampleSize)
     m_sampleSize = newSampleSize;
 }
 
-void Model::InitExpectedPlevelCDF()
-{
-    //double step_size = 1./ m_plevelsInteravals, currentStep = step_size; // Шаг.
-    double entryInOneBar = (m_plevelsSize/ m_plevelsInteravalsSize); // Теоретическое значения кол-ва plevels в одной ячейке(диапазоне)
-    double probabilityForOneEntry = entryInOneBar/ m_plevelsSize ; // Теоретическая вероятность попадания в ячейку (диапазон)
 
-    for (size_t i = 0; i < m_plevelsInteravalsSize; ++i){
-        if (i == 0) {
-             m_plevelExpectedCDF[i] = probabilityForOneEntry;
-             continue;
-        }
-
-
-        m_plevelExpectedCDF[i] = probabilityForOneEntry +  m_plevelExpectedCDF[i - 1];
-
-    }
-
-
-    // Test
-    qDebug() << "m_plevelExpectedCDF \n";
-    for(auto & item : m_plevelExpectedCDF ) {
-        qDebug() << "Step: " << item.first << " Value :" << item.second << "\n";
-    }
-
-
-
-}
-
-void Model::InitObservedPlevelCDF()
-{
-
-
-    for (size_t i = 0; i < m_plevelsInteravalsSize; ++i){
-        if (i == 0) {
-             m_plevelObservedCDF[i] = 0;
-             continue;
-        }
-
-
-        m_plevelObservedCDF[i] = 0;
-
-    }
-
-
-    // Test
-    qDebug() << "m_plevelExpectedCDF \n";
-    for(auto & item : m_plevelExpectedCDF ) {
-        qDebug() << "Step: " << item.first << " Value :" << item.second << "\n";
-    }
-}
 
 void Model::InitPlevelsIntervals()
 {
@@ -184,6 +142,7 @@ void Model::InitHistogram()
     if (d0.getDistributionSize() != 0  && m_generator){
          m_histogram = new Histogram(m_generator,m_sampleSize);
          m_histogram->setD0(d0);
+
          m_histogram->Init();
     }
 
@@ -192,9 +151,10 @@ void Model::InitHistogram()
 void Model::PrintPlevels() const
 {
     qDebug() << "m_plevelObservedCDF \n";
-    for(auto & item : m_plevelObservedCDF ) {
-        qDebug() << "Step: " << item.first << " Count :" << item.second << "\n";
+    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
+         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDF[i] << "\n";
     }
+
 }
 
 uint32_t Model::distSize() const
@@ -207,17 +167,23 @@ void Model::setDistSize(uint32_t newDistSize)
     m_distSize = newDistSize;
 }
 
-const std::map<uint32_t, double> &Model::plevelExpectedCDF() const
-{
-    return m_plevelExpectedCDF;
-}
 
-const std::map<uint32_t, double> &Model::plevelObservedCDF() const
-{
-    return m_plevelObservedCDF;
-}
 
 const std::vector<double> &Model::plevelsInteravals() const
 {
     return m_plevelsInteravals;
+}
+
+const std::vector<double> &Model::plevelObservedCDF() const
+{
+    return m_plevelObservedCDF;
+}
+
+void Model::setGenerator(Generator *newGenerator)
+
+{
+    if (m_generator) {
+        delete m_generator;
+    }
+    m_generator = newGenerator;
 }

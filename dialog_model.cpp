@@ -1,12 +1,16 @@
 #include "dialog_model.h"
 #include "ui_dialog_model.h"
-#include <algorithm>
+#include "model.h"
 
-Dialog_model::Dialog_model(QWidget *parent) :
+Dialog_model::Dialog_model(QWidget *parent, Model * model) :
     QDialog(parent),
     ui(new Ui::Dialog_model)
 {
     ui->setupUi(this);
+
+//    loadModelConfig(model);
+
+
 }
 
 Dialog_model::~Dialog_model()
@@ -14,13 +18,13 @@ Dialog_model::~Dialog_model()
     delete ui;
 }
 
-QVector<double> Dialog_model::getD0()
+std::vector<double> Dialog_model::getD0()
 {
     QString d0 = ui->txtProbs->text();
     QStringList d0_list = d0.split(",");
-    QVector<double> probs(d0_list.size());
+    std::vector<double> probs(d0_list.size());
     bool ok;
-    for (int i = 0 ; i < d0_list.size(); ++i){
+    for (size_t i = 0 ; i < d0_list.size(); ++i){
        double value = d0_list[i].toDouble(&ok);
        if (ok && value > 0) {
            probs[i] = value;
@@ -38,69 +42,68 @@ QChartView * Dialog_model::createChartHistogram(Histogram * histogram)
 {
 
 
-              histogram->calcChi();
-              QBarSet *set0 = new QBarSet("Observed");
-              QBarSet *set1 = new QBarSet("Expected");
-               uint64_t maxYValue = histogram->MaxFrequency() + (0.1 *  histogram->MaxFrequency());
+    histogram->calcChi();
+    QBarSet *set0 = new QBarSet("Observed");
+    QBarSet *set1 = new QBarSet("Expected");
+    uint64_t maxYValue = histogram->MaxFrequency() + (0.1 *  histogram->MaxFrequency());
 
 
-               for (const  auto& item : histogram->observedMerged()){
-                    *set0 << item.second;
-               }
-               for (const  auto& item : histogram->expectedMerged()){
-                   *set1 << item.second;
-               }
-
-//               histogram.PrintExpectedMergedFreq();
-//               histogram.PrintObservedMergedFreq();
+    for (const  auto& item : histogram->observedMerged()){
+        *set0 << item.second;
+    }
+    for (const  auto& item : histogram->expectedMerged()){
+        *set1 << item.second;
+    }
 
 
 
 
 
-                 QBarSeries *series = new QBarSeries();
-                   series->append(set0);
-                   series->append(set1);
 
 
-                   QChart *chart = new QChart();
-                   QString info = "Sample size: " + QString::number(histogram->sampleSize()) +
-                           "\t Chi-sqaure: " + QString::number(histogram->chi()) + " Degrees of freedom:" +
-                           QString::number(histogram->df()) + "\t P-value:" + QString::number(histogram->pvalue());
+    QBarSeries *series = new QBarSeries();
+    series->append(set0);
+    series->append(set1);
+
+
+    QChart *chart = new QChart();
+    QString info = "Sample size: " + QString::number(histogram->sampleSize()) +
+            "\t Chi-sqaure: " + QString::number(histogram->chi()) + " Degrees of freedom:" +
+            QString::number(histogram->df()) + "\t P-value:" + QString::number(histogram->pvalue());
 
 
 
 
-                     chart->addSeries(series);
-                     chart->setTitle("Discrete Distribution Sample " + info);
-                     chart->setAnimationOptions(QChart::SeriesAnimations);
-                      chart->setAnimationOptions(QChart::GridAxisAnimations);
+    chart->addSeries(series);
+    chart->setTitle("Discrete Distribution Sample " + info);
+    chart->setAnimationOptions(QChart::SeriesAnimations);
+    chart->setAnimationOptions(QChart::GridAxisAnimations);
 
 
-                     QStringList categories;
+    QStringList categories;
 
-                     for (const  auto& item : histogram->observedMerged()){
-                         categories << QString::number(item.first);
-                     }
+    for (const  auto& item : histogram->observedMerged()){
+        categories << QString::number(item.first);
+    }
 
-                     QBarCategoryAxis *axisX = new QBarCategoryAxis();
-                     axisX->append(categories);
-                     chart->addAxis(axisX, Qt::AlignBottom);
-                     series->attachAxis(axisX);
+    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+    axisX->append(categories);
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
 
-                     QValueAxis *axisY = new QValueAxis();
+    QValueAxis *axisY = new QValueAxis();
 
-                     axisY->setRange(0,static_cast<uint64_t>(maxYValue));
-                     chart->addAxis(axisY, Qt::AlignLeft);
-                     series->attachAxis(axisY);
+    axisY->setRange(0,static_cast<uint64_t>(maxYValue));
+    chart->addAxis(axisY, Qt::AlignLeft);
+    series->attachAxis(axisY);
 
-                     chart->legend()->setVisible(true);
-                     chart->legend()->setAlignment(Qt::AlignBottom);
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
 
 
-                      QChartView *chartView = new QChartView(chart);
-                      chartView->setRenderHint(QPainter::Antialiasing);
-                      return  chartView;
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    return  chartView;
 }
 
 
@@ -143,6 +146,18 @@ QChartView *Dialog_model::chartHistogram() const
 {
     return m_chartHistogram;
 }
+
+//void Dialog_model::loadModelConfig(Model *model)
+//{
+//    ui->lbSampleSize->setText(QString::number(model->sampleSize()));
+//    QString d0 = "";
+//    for (const auto & p : model->getD0().p()){
+//        qDebug() << p << " ";
+//        d0.append(QString::fromStdString(std::to_string()));
+//        d0.append(",");
+//    }
+//    ui->txtProbs->setText(d0);
+//}
 
 
 

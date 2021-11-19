@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDialog>
 //#include <QChartView>
+#include "model.h"
 #include "dialog_model.h"
 #include "dialog_plevels.h"
 QT_BEGIN_NAMESPACE
@@ -23,6 +24,7 @@ public:
     void loadPlevelsChart() const;
 
     QChartView *chartPlevels() const;
+    QChartView * createChartHistogram(Histogram * histogram);
     void clearLayout();
 
 private slots:
@@ -36,8 +38,9 @@ signals:
      void signalChart(QChartView * chart);
 private:
     QWidget * widget = nullptr;
-    QChartView * m_chartView = nullptr;
+    QChartView * m_chartSampleHistogram = nullptr;
     QChartView * m_chartPlevels = nullptr;
+    Model * model = nullptr;
     Ui::MainWindow *ui;
 
 

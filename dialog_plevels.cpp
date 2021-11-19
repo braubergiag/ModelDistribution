@@ -13,13 +13,13 @@ Dialog_Plevels::~Dialog_Plevels()
     delete ui;
 }
 
-QVector<double> Dialog_Plevels::getD0()
+std::vector<double> Dialog_Plevels::getD0()
 {
     QString h0  = ui->txtProbs->text();
     QStringList h0_lsit = h0.split(",");
-    QVector<double> probs(h0_lsit.size());
+    std::vector<double> probs(h0_lsit.size());
     bool ok;
-    for (int i = 0 ; i < h0_lsit.size(); ++i){
+    for (size_t i = 0 ; i < h0_lsit.size(); ++i){
        double value = h0_lsit[i].toDouble(&ok);
        if (ok && value > 0) {
            probs[i] = value;
@@ -32,24 +32,7 @@ QVector<double> Dialog_Plevels::getD0()
     return probs;
 }
 
-//QVector<double> Dialog_Plevels::getD1()
-//{
-//    QString h1 = ui->txtProbsH1->text();
-//    QStringList h1_list = h1.split(",");
-//    QVector<double> probs(h1_list.size());
-//    bool ok;
-//    for (int i = 0 ; i < h1_list.size(); ++i){
-//       double value = h1_list[i].toDouble(&ok);
-//       if (ok && value > 0) {
-//           probs[i] = value;
-//           qDebug() << probs[i] << " ";
-//       }
 
-//    }
-
-
-//    return probs;
-//}
 
 QChartView *Dialog_Plevels::chartPlevels() const
 {
@@ -61,62 +44,66 @@ QChartView *Dialog_Plevels::createPlevelsChart(Model  * model)
 {
 
 
-    QBarSet *set0 = new QBarSet("Observed");
-    QBarSet *set1 = new QBarSet("Expected");
+    QBarSet *set0 = new QBarSet("Observed Plevel");
+    QBarSet *set1 = new QBarSet("Expected Plevel");
      const uint64_t maxYValue = 1.1;
 
 
-     for (const  auto& item : model->plevelObservedCDF()){
-          *set0 << item.second;
+     for (const  auto& observedPlevel : model->plevelObservedCDF()){
+         *set0 << observedPlevel;
      }
+
+     for (const  auto& expectedPlevel : model->plevelsInteravals()){
+         *set1 << expectedPlevel;
+     }
+
+
+
+
+     QBarSeries *series = new QBarSeries();
+     series->append(set0);
+
+     series->append(set1);
+
+
+
+     QChart *chart = new QChart();
+
+
+
+
+
+     chart->addSeries(series);
+     chart->setTitle("Plevels CDFs");
+     chart->setAnimationOptions(QChart::SeriesAnimations);
+     chart->setAnimationOptions(QChart::GridAxisAnimations);
+
+
+     QStringList categories;
+
      for (const  auto& item : model->plevelsInteravals()){
-         *set1 << item;
+         categories << QString::number(item);
      }
 
 
+     QBarCategoryAxis *axisX = new QBarCategoryAxis();
+     axisX->append(categories);
+     chart->addAxis(axisX, Qt::AlignBottom);
+     series->attachAxis(axisX);
+
+     QValueAxis *axisY = new QValueAxis();
+
+     axisY->setRange(0,static_cast<uint64_t>(maxYValue));
+     chart->addAxis(axisY, Qt::AlignLeft);
+     series->attachAxis(axisY);
+
+     chart->legend()->setVisible(true);
+     chart->legend()->setAlignment(Qt::AlignBottom);
 
 
-       QBarSeries *series = new QBarSeries();
-         series->append(set0);
-         series->append(set1);
-
-
-         QChart *chart = new QChart();
-
-
-
-
-           chart->addSeries(series);
-           chart->setTitle("Plevels CDFs");
-           chart->setAnimationOptions(QChart::SeriesAnimations);
-            chart->setAnimationOptions(QChart::GridAxisAnimations);
-
-
-           QStringList categories;
-
-           for (const  auto& item : model->plevelsInteravals()){
-               categories << QString::number(item);
-           }
-
-
-           QBarCategoryAxis *axisX = new QBarCategoryAxis();
-           axisX->append(categories);
-           chart->addAxis(axisX, Qt::AlignBottom);
-           series->attachAxis(axisX);
-
-           QValueAxis *axisY = new QValueAxis();
-
-           axisY->setRange(0,static_cast<uint64_t>(maxYValue));
-           chart->addAxis(axisY, Qt::AlignLeft);
-           series->attachAxis(axisY);
-
-           chart->legend()->setVisible(true);
-           chart->legend()->setAlignment(Qt::AlignBottom);
-
-
-            QChartView *chartView = new QChartView(chart);
-            chartView->setRenderHint(QPainter::Antialiasing);
-            return  chartView;
+     QChartView *chartView = new QChartView(chart);
+     chartView->setRenderHint(QPainter::Antialiasing);
+     return  chartView;
 }
 
 void Dialog_Plevels::on_buttonBox_accepted()
@@ -124,8 +111,8 @@ void Dialog_Plevels::on_buttonBox_accepted()
 
     Generator * generator = nullptr;
     if (ui->rbTID->isChecked()) {
-         qDebug() << "You choose : " << ui->rbTID->text();
-         generator = new TID_Generator(getD0());
+        qDebug() << "You choose : " << ui->rbTID->text();
+        generator = new TID_Generator(getD0());
     } else if (ui->rbTIS->isChecked()) {
         qDebug() <<"You choose : " << ui->rbTIS->text();
         generator = new  TISM_Generator(getD0());
@@ -138,22 +125,21 @@ void Dialog_Plevels::on_buttonBox_accepted()
         return;
     }
 
-   Model * model;
-   model = new Model(generator);
-   model->setSampleSize(sampleSize);
-   model->setD0(Distribution(getD0()));
+    Model * model;
+    model = new Model(generator);
+    model->setSampleSize(sampleSize);
+    model->setD0(Distribution(getD0()));
 
 
 
-   uint32_t plevelsSize = ui->lbPlevelsSize->text().toUInt();
-   model->setPlevelsSize(plevelsSize);
-   model->InitExpectedPlevelCDF();
-   model->InitHistogram();
-   model->InitPlevelsIntervals();
-  model->createPlevelsSample();
-   model->PrintPlevels();
-  m_chartPlevels = createPlevelsChart(model);
-  delete model;
+    uint32_t plevelsSize = ui->lbPlevelsSize->text().toUInt();
+    model->setPlevelsSize(plevelsSize);
+    model->InitHistogram();
+    model->InitPlevelsIntervals();
+    model->createPlevelsSample();
+    model->PrintPlevels();
+    m_chartPlevels = createPlevelsChart(model);
+    delete model;
     accept();
 }
 

@@ -12,7 +12,7 @@
 #include <QtCharts/QCategoryAxis>
 #include <QtCharts/QChartView>
 #include <QChartView>
-
+#include <vector>
 #include "model.h"
 #include "Histogram.h"
 #include "Distribution.h"
@@ -28,9 +28,9 @@ class Dialog_model : public QDialog
     Q_OBJECT
 
 public:
-    explicit Dialog_model(QWidget *parent = nullptr);
+    explicit Dialog_model(QWidget *parent = nullptr, Model * model = nullptr);
     ~Dialog_model();
-    QVector<double> getD0();
+    std::vector<double> getD0();
 
 
      Histogram histogram() const;
@@ -38,22 +38,18 @@ public:
 
 
      QChartView  *createChartHistogram(Histogram *  histogram);
-
-
      QChartView *chartHistogram() const;
+     void loadModelConfig(Model * model);
 
 private slots:
     void on_buttonBox_accepted();
-
     void on_buttonBox_rejected();
-
-
-
     void on_lbSampleSize_editingFinished();
 
 private:
     bool checkSamleSize() const;
     QChartView * m_chartHistogram;
+
     Ui::Dialog_model *ui;
 };
 

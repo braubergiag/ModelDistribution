@@ -31,8 +31,7 @@ public:
     void setSampleSize(uint64_t newSampleSize);
 
 
-    void InitExpectedPlevelCDF();
-    void InitObservedPlevelCDF();
+
     void InitPlevelsIntervals();
     void InitModel();
     void InitHistogram();
@@ -41,11 +40,13 @@ public:
     uint32_t distSize() const;
     void setDistSize(uint32_t newDistSize);
 
-    const std::map<uint32_t, double> &plevelExpectedCDF() const;
 
-    const std::map<uint32_t, double> &plevelObservedCDF() const;
 
     const std::vector<double> &plevelsInteravals() const;
+
+    const std::vector<double> &plevelObservedCDF() const;
+
+    void setGenerator(Generator *newGenerator);
 
 private:
 
@@ -60,8 +61,7 @@ private:
     uint32_t m_plevelsInteravalsSize = 20; // Количество интервалов для разбиения
 
     std::vector<double> m_plevelsInteravals;
-    std::map<uint32_t, double> m_plevelExpectedCDF;
-    std::map<uint32_t, double> m_plevelObservedCDF;
+    std::vector<double> m_plevelObservedCDF;
 
 
 

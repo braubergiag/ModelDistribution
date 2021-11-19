@@ -36,7 +36,7 @@ void Histogram::calcChi(){
     }
 
 
-    CHI(1, m_distSize - 1, m_chiValue, m_pvalue);
+    CHI(1, m_df, m_chiValue, m_pvalue);
     std::cout << "Pvalue << " << m_pvalue << std::endl;
 
 //    m_mean += m_chiValue;
@@ -139,6 +139,7 @@ void Histogram::Init()
 
     if (m_d0.getDistributionSize() != 0) {
         m_distSize = m_d0.getDistributionSize();
+        m_df = m_distSize -1;
         CalculateExpectedFrequency();
     }
 

@@ -28,7 +28,7 @@ public:
     explicit Dialog_Plevels(QWidget *parent = nullptr);
     ~Dialog_Plevels();
 
-    QVector<double> getD0();
+    std::vector<double> getD0();
 //    QVector<double> getD1();
 
     QChartView * chartPlevels() const;
