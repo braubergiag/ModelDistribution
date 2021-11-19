@@ -31,13 +31,21 @@ public:
     void setSampleSize(uint64_t newSampleSize);
 
 
-    void Init();
+    void InitExpectedPlevelCDF();
+    void InitObservedPlevelCDF();
+    void InitPlevelsIntervals();
     void InitModel();
     void InitHistogram();
     void PrintPlevels() const;
 
     uint32_t distSize() const;
     void setDistSize(uint32_t newDistSize);
+
+    const std::map<uint32_t, double> &plevelExpectedCDF() const;
+
+    const std::map<uint32_t, double> &plevelObservedCDF() const;
+
+    const std::vector<double> &plevelsInteravals() const;
 
 private:
 
@@ -49,10 +57,11 @@ private:
     uint64_t m_sampleSize = 0;
     uint32_t m_distSize = 0;
     uint32_t m_plevelsSize = 0;
-    uint32_t m_plevelsNum = 20; // Количество интервалов для разбиения
+    uint32_t m_plevelsInteravalsSize = 20; // Количество интервалов для разбиения
 
-    std::map<double, uint32_t> m_plevelExpectedCDF;
-    std::map<double, uint32_t> m_plevelObservedCDF;
+    std::vector<double> m_plevelsInteravals;
+    std::map<uint32_t, double> m_plevelExpectedCDF;
+    std::map<uint32_t, double> m_plevelObservedCDF;
 
 
 

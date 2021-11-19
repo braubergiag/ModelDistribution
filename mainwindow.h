@@ -23,6 +23,7 @@ public:
     void loadPlevelsChart() const;
 
     QChartView *chartPlevels() const;
+    void clearLayout();
 
 private slots:
 

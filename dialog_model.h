@@ -13,6 +13,7 @@
 #include <QtCharts/QChartView>
 #include <QChartView>
 
+#include "model.h"
 #include "Histogram.h"
 #include "Distribution.h"
 #include "Generator.h"
@@ -36,7 +37,7 @@ public:
 
 
 
-     QChartView  *createChartHistogram(Histogram& histogram);
+     QChartView  *createChartHistogram(Histogram *  histogram);
 
 
      QChartView *chartHistogram() const;

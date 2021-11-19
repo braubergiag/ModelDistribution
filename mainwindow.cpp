@@ -35,13 +35,12 @@ void MainWindow::on_actionCreate_triggered()
 {
 
     Dialog_model * dlg = new Dialog_model(this);
-    if (m_chartView) {
-        ui->verticalLayout_2->removeWidget(m_chartView);
-    }
+
     dlg->exec();
+    clearLayout();
+    widget = new QWidget(this);
     m_chartView = dlg->chartHistogram();
     if (m_chartView){
-
         load();
     }
 
@@ -74,10 +73,9 @@ void MainWindow::on_actionGenerate_P_Levels_triggered()
 {
 
     Dialog_Plevels * dlg = new Dialog_Plevels(this);
-    if (m_chartPlevels) {
-        ui->verticalLayout_2->removeWidget(m_chartPlevels);
-    }
+
     dlg->exec();
+    clearLayout();
     m_chartPlevels = dlg->chartPlevels();
     if (m_chartPlevels){
          loadPlevelsChart();
@@ -90,5 +88,20 @@ void MainWindow::on_actionGenerate_P_Levels_triggered()
 QChartView *MainWindow::chartPlevels() const
 {
     return m_chartPlevels;
+}
+
+void MainWindow::clearLayout()
+{
+    if (m_chartPlevels) {
+        ui->verticalLayout_2->removeWidget(m_chartPlevels);
+        m_chartPlevels = nullptr;
+
+    } else if (m_chartView) {
+        ui->verticalLayout_2->removeWidget(m_chartView);
+        m_chartView =  nullptr;
+    }
+
+    qDebug() << ui->verticalLayout_2->isEmpty();
+    ui->verticalLayout_2->update();
 }
 

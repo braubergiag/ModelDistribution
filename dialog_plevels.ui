@@ -19,7 +19,7 @@
      <item row="0" column="3">
       <widget class="QLineEdit" name="lbSampleSize">
        <property name="text">
-        <string>100000</string>
+        <string>100</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -36,7 +36,7 @@
      <item row="1" column="3">
       <widget class="QLineEdit" name="lbPlevelsSize">
        <property name="text">
-        <string>10000</string>
+        <string>1000</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -79,33 +79,24 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Введите вероятности дискретного распределения 
- для нулевой  гипотезы (через запятую):</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="txtProbsH0">
-     <property name="inputMask">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="label_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
-      <string>Введите вероятности дискретного распределения  
- для альтернативной  гипотезы(через запятую):</string>
+      <string>Введите вероятности дискретного распределения (через запятую):</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="txtProbsH1"/>
+    <widget class="QLineEdit" name="txtProbs">
+     <property name="text">
+      <string>0.5,0.5</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

@@ -23,7 +23,7 @@ void Histogram::calcChi(){
     GenerateSample();
     mergeExeptectedValues();
 
-
+    m_chiValue = 0;
     for (auto &  [key,expected_value] : m_expectedMerged) {
         if (m_observed.count(key) != 0) {
             squareDiff = (m_observedMerged.at(key) - expected_value) * (m_observedMerged.at(key) - expected_value);
@@ -37,6 +37,7 @@ void Histogram::calcChi(){
 
 
     CHI(1, m_distSize - 1, m_chiValue, m_pvalue);
+    std::cout << "Pvalue << " << m_pvalue << std::endl;
 
 //    m_mean += m_chiValue;
 

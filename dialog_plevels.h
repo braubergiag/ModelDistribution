@@ -4,6 +4,13 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QChartView>
+#include <QtCharts/QBarSet>
+#include <QtCharts/QBarSeries>
+#include <QtCharts/QChart>
+#include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QCategoryAxis>
+#include <QtCharts/QChartView>
+#include <QChartView>
 #include <model.h>
 #include "TID_Generator.h"
 #include "TISM_Generator.h"
@@ -22,10 +29,10 @@ public:
     ~Dialog_Plevels();
 
     QVector<double> getD0();
-    QVector<double> getD1();
+//    QVector<double> getD1();
 
     QChartView * chartPlevels() const;
-    QChartView * createPlevelsChart(Histogram & histogram);
+    QChartView * createPlevelsChart(Model * model);
 
 private slots:
     void on_buttonBox_accepted();

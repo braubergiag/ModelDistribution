@@ -34,21 +34,20 @@ QVector<double> Dialog_model::getD0()
 
 }
 
-QChartView * Dialog_model::createChartHistogram(Histogram &histogram)
+QChartView * Dialog_model::createChartHistogram(Histogram * histogram)
 {
 
 
-              histogram.calcChi();
-
+              histogram->calcChi();
               QBarSet *set0 = new QBarSet("Observed");
               QBarSet *set1 = new QBarSet("Expected");
-               uint64_t maxYValue = histogram.MaxFrequency() + (0.1 *  histogram.MaxFrequency());
+               uint64_t maxYValue = histogram->MaxFrequency() + (0.1 *  histogram->MaxFrequency());
 
 
-               for (const  auto& item : histogram.observedMerged()){
+               for (const  auto& item : histogram->observedMerged()){
                     *set0 << item.second;
                }
-               for (const  auto& item : histogram.expectedMerged()){
+               for (const  auto& item : histogram->expectedMerged()){
                    *set1 << item.second;
                }
 
@@ -65,9 +64,9 @@ QChartView * Dialog_model::createChartHistogram(Histogram &histogram)
 
 
                    QChart *chart = new QChart();
-                   QString info = "Sample size: " + QString::number(histogram.sampleSize()) +
-                           "\t Chi-sqaure: " + QString::number(histogram.chi()) + " Degrees of freedom:" +
-                           QString::number(histogram.df()) + "\t P-value:" + QString::number(histogram.pvalue());
+                   QString info = "Sample size: " + QString::number(histogram->sampleSize()) +
+                           "\t Chi-sqaure: " + QString::number(histogram->chi()) + " Degrees of freedom:" +
+                           QString::number(histogram->df()) + "\t P-value:" + QString::number(histogram->pvalue());
 
 
 
@@ -80,7 +79,7 @@ QChartView * Dialog_model::createChartHistogram(Histogram &histogram)
 
                      QStringList categories;
 
-                     for (const  auto& item : histogram.observedMerged()){
+                     for (const  auto& item : histogram->observedMerged()){
                          categories << QString::number(item.first);
                      }
 
@@ -115,21 +114,18 @@ void Dialog_model::on_buttonBox_accepted()
         return;
     }
 
-    QVector<double> probs = getD0();
 
-    Distribution  dist(probs);
     Generator * generator;
-    if (ui->rbTID->isChecked()) {
-         qDebug() << "You choose : " << ui->rbTID->text();
-         generator = new TID_Generator(dist);
+    if (ui->rbTID->isChecked()) {;
+         generator = new TID_Generator(Distribution(getD0()));
     } else if (ui->rbTIS->isChecked()) {
-        qDebug() <<"You choose : " << ui->rbTIS->text();
-        generator = new  TISM_Generator(dist);
+        generator = new  TISM_Generator(Distribution(getD0()));
     }
-    Histogram histogram(generator,sampleSize);
-    histogram.setD0(dist);
-    histogram.Init();
-    m_chartHistogram = createChartHistogram(histogram);
+    Model * model = new Model(generator);
+    model->setSampleSize(sampleSize);
+    model->setD0(Distribution(getD0()));
+    model->InitHistogram();
+    m_chartHistogram = createChartHistogram(model->histogram());
 
     accept();
 
