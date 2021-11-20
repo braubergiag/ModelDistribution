@@ -63,6 +63,8 @@
    <addaction name="actionGenerate_P_Levels"/>
    <addaction name="separator"/>
    <addaction name="actionPower"/>
+   <addaction name="separator"/>
+   <addaction name="actionPower_Analysis"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
    <property name="windowTitle">
@@ -87,7 +89,12 @@
   </action>
   <action name="actionPower">
    <property name="text">
-    <string>Power</string>
+    <string>Power &amp;&amp; Significance level</string>
+   </property>
+  </action>
+  <action name="actionPower_Analysis">
+   <property name="text">
+    <string>Power Analysis</string>
    </property>
   </action>
  </widget>

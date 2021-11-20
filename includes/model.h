@@ -24,14 +24,12 @@ public:
     void setPlevelsSize(uint32_t newPlevelsSize);
 
     Histogram *histogram() const;
-
-    void createPlevelsSample();
-
     uint64_t sampleSize() const;
     void setSampleSize(uint64_t newSampleSize);
 
 
-
+    void createPlevelsSample();
+    void createPlevelsDistribution();
     void InitPlevelsIntervals();
     void InitModel();
     void InitHistogram();
@@ -48,6 +46,10 @@ public:
 
     void setGenerator(Generator *newGenerator);
 
+    const std::vector<double> &plevelDistribution() const;
+
+    uint32_t plevelsInteravalsSize() const;
+
 private:
 
 
@@ -62,6 +64,7 @@ private:
 
     std::vector<double> m_plevelsInteravals;
     std::vector<double> m_plevelObservedCDF;
+    std::vector<double> m_plevelDistribution;
 
 
 

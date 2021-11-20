@@ -80,9 +80,12 @@ void Model::createPlevelsSample()
     }
 
     // Cчитаем накопленные вероятности
-    for (size_t i = 1; i < m_plevelObservedCDF.size(); ++i) {
-        m_plevelObservedCDF[i] += m_plevelObservedCDF[i - 1];
-    }
+
+        for (size_t i = 1; i < m_plevelObservedCDF.size(); ++i) {
+            m_plevelObservedCDF[i] += m_plevelObservedCDF[i - 1];
+        }
+
+
 
 
 
@@ -93,6 +96,36 @@ void Model::createPlevelsSample()
     }
 
 
+
+
+
+}
+
+void Model::createPlevelsDistribution()
+{
+    m_plevelDistribution.resize(m_plevelsInteravalsSize,0);
+
+
+   for (size_t i = 0 ; i < m_plevelsInteravals.size(); ++ i){
+       for (size_t j = 0; j < m_plevelsSize; ++j){
+           m_histogram->calcChi();
+           m_currentPvalue = m_histogram->pvalue();
+           if (m_currentPvalue < m_plevelsInteravals[i]) {
+               ++m_plevelDistribution[i];
+               continue;
+           }
+    }
+   }
+
+   // Нормировка
+   for (size_t i = 0; i < m_plevelDistribution.size(); ++i) {
+       m_plevelDistribution[i] /= m_plevelsSize;
+   }
+   // Тест
+   qDebug() << "m_plevelDistribution \n";
+   for (size_t i = 0; i < m_plevelDistribution.size(); ++i) {
+        qDebug() << "Step: " << i << " Value :" << m_plevelDistribution[i] << "\n";
+   }
 
 
 
@@ -190,4 +223,14 @@ void Model::setGenerator(Generator *newGenerator)
         delete m_generator;
     }
     m_generator = newGenerator;
+}
+
+const std::vector<double> &Model::plevelDistribution() const
+{
+    return m_plevelDistribution;
+}
+
+uint32_t Model::plevelsInteravalsSize() const
+{
+    return m_plevelsInteravalsSize;
 }

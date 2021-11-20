@@ -30,7 +30,9 @@ void Dialog_Plevels::on_buttonBox_accepted()
     plevelsSize = ui->lbSampleSize->text().toUInt();
 
     Generator * generator = nullptr;
-    std::vector<double> d0 = dialogHandler.parseTxtToVector(ui->txtProbs);
+    std::vector<double> p0 = dialogHandler.parseTxtToVector(ui->txtProbs);
+    Distribution d0(p0);
+
 
 
     if (ui->rbTID->isChecked()) {
@@ -43,7 +45,7 @@ void Dialog_Plevels::on_buttonBox_accepted()
     m_model->setGenerator(generator);
     m_model->setSampleSize(sampleSize);
      m_model->setPlevelsSize(plevelsSize);
-    m_model->setD0(Distribution(d0));
+    m_model->setD0(d0);
 
     accept();
 }

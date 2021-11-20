@@ -8,6 +8,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    charthandler.cpp \
+    source/dialog_poweranalysis.cpp \
     source/dialoghandler.cpp \
     source/dialog_power.cpp \
     source/Distribution.cpp \
@@ -23,6 +25,8 @@ SOURCES += \
     source/probdist.cpp
 
 HEADERS += \
+    charthandler.h \
+    includes/dialog_poweranalysis.h \
     includes/dialoghandler.h \
     includes/dialog_power.h \
     includes/Distribution.h \
@@ -40,6 +44,7 @@ FORMS += \
     ui/dialog_model.ui \
     ui/dialog_plevels.ui \
     ui/dialog_power.ui \
+    ui/dialog_poweranalysis.ui \
     ui/mainwindow.ui
 
 INCLUDEPATH+= includes/

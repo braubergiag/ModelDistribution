@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "model.h"
+#include "dialoghandler.h"
 namespace Ui {
 class Dialog_Power;
 }
@@ -15,8 +16,12 @@ public:
     explicit Dialog_Power(QWidget *parent = nullptr,Model * model = nullptr);
     ~Dialog_Power();
 
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     Ui::Dialog_Power *ui;
+    DialogHandler dialogHandler;
     Model * m_model = nullptr;
 };
 
