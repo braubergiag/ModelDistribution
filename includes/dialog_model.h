@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <vector>
 #include "model.h"
+#include "dialoghandler.h"
 #include "Histogram.h"
 #include "Distribution.h"
 #include "Generator.h"
@@ -38,6 +39,7 @@ private slots:
 private:
     bool checkSamleSize() const;
     Model * m_model = nullptr;
+    DialogHandler dialogHandler;
 
     Ui::Dialog_model *ui;
 };

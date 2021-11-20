@@ -6,7 +6,7 @@
 #include <model.h>
 #include "TID_Generator.h"
 #include "TISM_Generator.h"
-
+#include "dialoghandler.h"
 #include "Histogram.h"
 namespace Ui {
 class Dialog_Plevels;
@@ -20,8 +20,6 @@ public:
     explicit Dialog_Plevels(QWidget *parent = nullptr, Model * model = nullptr);
     ~Dialog_Plevels();
 
-    std::vector<double> getD0();
-
 
 private slots:
     void on_buttonBox_accepted();
@@ -29,6 +27,7 @@ private slots:
 private:
     bool checkSamleSize() const;
     Model * m_model = nullptr;
+    DialogHandler dialogHandler;
     Ui::Dialog_Plevels *ui;
 };
 
