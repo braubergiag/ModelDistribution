@@ -5,13 +5,6 @@
 #include <QMessageBox>
 #include <QVector>
 #include <QDebug>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QChart>
-#include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QCategoryAxis>
-#include <QtCharts/QChartView>
-#include <QChartView>
 #include <vector>
 #include "model.h"
 #include "Histogram.h"

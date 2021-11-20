@@ -3,14 +3,6 @@
 
 #include <QDialog>
 #include <QMessageBox>
-#include <QChartView>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QChart>
-#include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QCategoryAxis>
-#include <QtCharts/QChartView>
-#include <QChartView>
 #include <model.h>
 #include "TID_Generator.h"
 #include "TISM_Generator.h"

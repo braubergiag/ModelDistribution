@@ -61,6 +61,19 @@
    <addaction name="actionCreate"/>
    <addaction name="separator"/>
    <addaction name="actionGenerate_P_Levels"/>
+   <addaction name="separator"/>
+   <addaction name="actionPower"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>BottomToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="actionCreate">
    <property name="text">
@@ -70,6 +83,11 @@
   <action name="actionGenerate_P_Levels">
    <property name="text">
     <string>Generate P-Levels</string>
+   </property>
+  </action>
+  <action name="actionPower">
+   <property name="text">
+    <string>Power</string>
    </property>
   </action>
  </widget>

@@ -8,6 +8,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    source/dialog_power.cpp \
     source/Distribution.cpp \
     source/Generator.cpp \
     source/Histogram.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     source/probdist.cpp
 
 HEADERS += \
+    includes/dialog_power.h \
     includes/Distribution.h \
      includes/Generator.h \
      includes/Histogram.h \
@@ -35,6 +37,7 @@ HEADERS += \
 FORMS += \
     ui/dialog_model.ui \
     ui/dialog_plevels.ui \
+    ui/dialog_power.ui \
     ui/mainwindow.ui
 
 INCLUDEPATH+= includes/

@@ -250,3 +250,15 @@ void MainWindow::clearLayout()
     ui->verticalLayout_2->update();
 }
 
+
+void MainWindow::on_actionPower_triggered()
+{
+
+    Dialog_Power * dlg = new Dialog_Power(this,m_model);
+    dlg->exec();
+    clearLayout();
+
+
+    delete dlg;
+}
+

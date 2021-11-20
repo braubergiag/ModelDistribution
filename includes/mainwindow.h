@@ -3,10 +3,11 @@
 
 #include <QMainWindow>
 #include <QDialog>
-//#include <QChartView>
+#include <QChartView>
 #include "model.h"
 #include "dialog_model.h"
 #include "dialog_plevels.h"
+#include "dialog_power.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -35,6 +36,8 @@ private slots:
     void on_actionCreate_triggered();
 
     void on_actionGenerate_P_Levels_triggered();
+
+    void on_actionPower_triggered();
 
 signals:
      void signalChart(QChartView * chart);
