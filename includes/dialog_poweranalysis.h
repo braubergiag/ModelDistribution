@@ -19,10 +19,13 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_buttonBox_rejected();
+
 private:
+     Ui::Dialog_PowerAnalysis *ui;
     Model * m_model = nullptr;
     DialogHandler dialogHandler;
-    Ui::Dialog_PowerAnalysis *ui;
+
 };
 
 #endif // DIALOG_POWERANALYSIS_H

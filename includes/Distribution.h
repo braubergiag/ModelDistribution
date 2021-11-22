@@ -18,6 +18,7 @@ public:
     size_t getDistributionSize() const {return m_p.size();}
     void NormalizeDistribution();
     const vector<double> &p() const;
+    void setP(const vector<double> &newP);
 };
 
 std::ostream & operator <<(std::ostream& stream,Distribution & distribution);

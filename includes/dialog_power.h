@@ -19,6 +19,8 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_rbCheckEq_clicked();
+
 private:
     Ui::Dialog_Power *ui;
     DialogHandler dialogHandler;

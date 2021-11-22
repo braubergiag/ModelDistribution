@@ -27,7 +27,7 @@ void Dialog_Plevels::on_buttonBox_accepted()
     uint64_t plevelsSize = 0;
     if (!dialogHandler.checkSamleSize(ui->lbSampleSize)) return;
     sampleSize = ui->lbSampleSize->text().toUInt();
-    plevelsSize = ui->lbSampleSize->text().toUInt();
+    plevelsSize = ui->lbPlevelsSize->text().toUInt();
 
     Generator * generator = nullptr;
     std::vector<double> p0 = dialogHandler.parseTxtToVector(ui->txtProbs);

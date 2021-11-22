@@ -3,8 +3,11 @@
 
 #include <QMainWindow>
 #include <QDialog>
+
+#include <QtCharts>
 #include <QChartView>
 #include <QLineSeries>
+#include "qcustomplot.h"
 #include "model.h"
 #include "dialog_model.h"
 #include "dialog_plevels.h"
@@ -23,16 +26,12 @@ public:
     ~MainWindow();
 
 
-    void load();
-    void loadPlevelsChart() const;
-    void loadPowerChart() const;
 
-    QChartView *chartView() const;
-    QChartView *chartPlevels() const;
     QChartView * createChartHistogram(Histogram * histogram);
     QChartView * createPlevelsChart(Model  * model);
-    QChartView * createPowerChart(Model * model);
-    QChartView * createPowerAnalysisChart(Model * model);
+    QCustomPlot * createPowerChart(Model * model);
+    QCustomPlot * createPowerDependencyChart(Model * model);
+
     void clearLayout();
 
 private slots:
@@ -51,7 +50,8 @@ signals:
 private:
     QChartView * m_chartSampleHistogram = nullptr;
     QChartView * m_chartPlevels = nullptr;
-    QChartView * m_chartPower = nullptr;
+    QCustomPlot * m_chartPower = nullptr;
+    QCustomPlot * m_chartPowerDependency = nullptr;
     Model * m_model = nullptr;
     Ui::MainWindow *ui;
 

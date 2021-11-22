@@ -6,6 +6,12 @@ const vector<double> &Distribution::p() const
     return m_p;
 }
 
+void Distribution::setP(const vector<double> &newP)
+{
+    m_p = newP;
+    NormalizeDistribution();
+}
+
 Distribution::Distribution(const std::vector<double> & p) :m_p(p){
     NormalizeDistribution();
 };

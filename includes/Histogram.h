@@ -23,11 +23,16 @@ public:
     void PrintExpectedMergedFreq();
     void CalculateExpectedFrequency();
     void mergeExeptectedValues();
+
+    double MeanChiValue() const {return m_mean;}
+
+
+
+
     int32_t GetObservedAt(int i ) const {return m_observedMerged.at(i);}
     int32_t GetExpectedAt(int i ) const {return m_expectedMerged.at(i);}
-    double MeanChiValue() const {return m_mean;}
     int32_t distSize() const;
-     int32_t distribSizeMerged() const;
+    int32_t distribSizeMerged() const;
     uint64_t MaxFrequency() const;
     int32_t sampleSize() const;
 
@@ -52,6 +57,8 @@ public:
     void setDistSize(int32_t newDistSize);
     void Init();
 
+    void setSampleSize(uint64_t newSampleSize);
+
 private:
     // Генератор псевдослучайных чисел
     unsigned m_seed;
@@ -68,7 +75,7 @@ private:
     int32_t m_df = 0;
     int32_t m_distribSizeMerged = 0;
     int32_t m_distSize = 0;
-    int32_t m_sampleSize = 0;
+    uint64_t m_sampleSize = 0;
 
 
 

@@ -9,7 +9,7 @@
 void Histogram::GenerateSample()  {
     double  alpha = 0.0;
     m_observed.clear();
-    for (int i = 0; i < m_sampleSize; ++i) {
+    for (size_t i = 0; i < m_sampleSize; ++i) {
         alpha = (*m_uniform)(m_generator);
         m_observed[m_sampleGenerator->GenerateValue(alpha)] += 1;
     }
@@ -140,13 +140,23 @@ void Histogram::Init()
     if (m_d0.getDistributionSize() != 0) {
         m_distSize = m_d0.getDistributionSize();
         m_df = m_distSize -1;
-        CalculateExpectedFrequency();
+        if (m_sampleSize != 0){
+             CalculateExpectedFrequency();
+        }
+
     }
 
 
     m_seed = std::chrono::system_clock::now().time_since_epoch().count();
     m_generator.seed(m_seed);
     m_uniform = new std::uniform_real_distribution<double> (0.0,1.0);
+}
+
+void Histogram::setSampleSize(uint64_t newSampleSize)
+{
+
+    m_sampleSize = newSampleSize;
+    CalculateExpectedFrequency();
 }
 
 

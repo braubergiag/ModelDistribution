@@ -122,7 +122,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Вероятности распределения для нулевой гипотезы (через запятую):</string>
+      <string>Вероятности распределения для нулевой гипотезы H0 (через запятую):</string>
      </property>
     </widget>
    </item>
@@ -142,7 +142,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Вероятности распределения для альтернативной гипотезы (через запятую):</string>
+      <string>Вероятности распределения для альтернативной гипотезы H1 (через запятую):</string>
      </property>
     </widget>
    </item>
@@ -196,6 +196,22 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Dialog_PowerAnalysis</sender>
+   <signal>destroyed()</signal>
+   <receiver>Dialog_PowerAnalysis</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>235</y>
     </hint>
    </hints>
   </connection>

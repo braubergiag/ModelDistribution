@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QGroupBox>
+#include <QtDebug>
 #include "Generator.h"
 #include "TID_Generator.h"
 #include "TISM_Generator.h"

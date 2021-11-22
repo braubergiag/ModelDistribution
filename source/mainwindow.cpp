@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QApplication>
+#include <QtCharts>
 #include <QtCharts/QBarSet>
 #include <QtCharts/QBarSeries>
 #include <QtCharts/QChart>
@@ -27,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_model->setD0(d0);
     m_model->InitHistogram();
     m_chartSampleHistogram = createChartHistogram(m_model->histogram());
-    load();
+    ui->verticalLayout_2->addWidget(m_chartSampleHistogram);
 
 }
 
@@ -63,9 +64,12 @@ QChartView * MainWindow::createChartHistogram(Histogram * histogram)
 
 
 
-
     series->append(set0);
+    //series->append(set1);
     series->append(set1);
+
+
+
 
     QChart *chart = new QChart();
     QString info = "Sample size: " + QString::number(histogram->sampleSize()) +
@@ -75,7 +79,8 @@ QChartView * MainWindow::createChartHistogram(Histogram * histogram)
 
 
     ui->txtDistributionInfo->setText(info);
-    chart->addSeries(series);;
+
+    chart->addSeries(series);
     chart->setTitle("Discrete Distribution Sample");
 
     chart->setAnimationOptions(QChart::SeriesAnimations);
@@ -91,7 +96,7 @@ QChartView * MainWindow::createChartHistogram(Histogram * histogram)
     QBarCategoryAxis *axisX = new QBarCategoryAxis();
     axisX->append(categories);
     chart->addAxis(axisX, Qt::AlignBottom);
-   series->attachAxis(axisX);
+   //series->attachAxis(axisX);
 
     QValueAxis *axisY = new QValueAxis();
 
@@ -115,11 +120,11 @@ QChartView *MainWindow::createPlevelsChart(Model  * model)
 
 {
 
-+
-
     QLineSeries *set0 = new QLineSeries();
-    set0->setName("Observed Plevel");
+
     QLineSeries *set1 = new QLineSeries();
+
+    set0->setName("Observed Plevel");
     set1->setName("Expected Plevel");
 
      const double maxYValue = 1.0, maxXValue = 1.0;
@@ -176,76 +181,55 @@ QChartView *MainWindow::createPlevelsChart(Model  * model)
      return  chartView;
 }
 
-QChartView *MainWindow::createPowerChart(Model *model)
+QCustomPlot *MainWindow::createPowerChart(Model *model)
 {
 
-//    QLineSeries *lineSeries = new QLineSeries();
-//       lineSeries->setColor(Qt::darkRed);
-//       //![1]
 
 
-//       size_t i = 0;
-//       for (const  auto& observedPlevel : model->plevelDistribution()){
-//                   *lineSeries << QPointF(model->plevelsInteravals().at(i),observedPlevel);
-//            ++i;
-//              }
+     QCustomPlot * customPlot = new QCustomPlot();
+
+     QVector<double> x = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
+     QVector<double> y  = QVector<double>(model->plevelDistribution().begin(),model->plevelDistribution().end());
+     x.insert(0,0);
+     y.insert(0,0);
+     customPlot->addGraph();
+     customPlot->graph(0)->setData(x,y);
+     customPlot->xAxis->setLabel("Alpha");
+     customPlot->yAxis->setLabel("PLevel \t rate");
+     customPlot->xAxis->setRange(0,1);
+     customPlot->yAxis->setRange(0,1);
+     customPlot->replot();
+
+     return customPlot;
 
 
 
 
 
-       QBarSet *set0 = new QBarSet("Observed Plevel");
-
-        const uint64_t maxYValue = 1.1;
 
 
-        for (const  auto& observedPlevel : model->plevelDistribution()){
-            *set0 << observedPlevel;
-        }
-
-
-        QBarSeries *series = new QBarSeries();
-        series->append(set0);
-
-        QChart *chart = new QChart();
-
-        chart->addSeries(series);
-        //chart->addSeries(lineSeries);
-        chart->setTitle("Plevels Distribution");
-        ui->txtDistributionInfo->setText("");
-        chart->setAnimationOptions(QChart::SeriesAnimations);
-        chart->setAnimationOptions(QChart::GridAxisAnimations);
-
-
-        QStringList categories;
-
-        for (const  auto& item : model->plevelsInteravals()){
-            categories << QString::number(item);
-        }
-
-
-        QBarCategoryAxis *axisX = new QBarCategoryAxis();
-        axisX->append(categories);
-        chart->addAxis(axisX, Qt::AlignBottom);
-        series->attachAxis(axisX);
-
-        QValueAxis *axisY = new QValueAxis();
-
-        axisY->setRange(0,maxYValue);
-        chart->addAxis(axisY, Qt::AlignLeft);
-        series->attachAxis(axisY);
-
-        chart->legend()->setVisible(true);
-        chart->legend()->setAlignment(Qt::AlignBottom);
-
-
-        QChartView *chartView = new QChartView(chart);
-        chartView->setRenderHint(QPainter::Antialiasing);
-        return  chartView;
 }
 
-QChartView *MainWindow::createPowerAnalysisChart(Model *model)
+QCustomPlot *MainWindow::createPowerDependencyChart(Model *model)
 {
+
+
+
+    QCustomPlot * customPlot = new QCustomPlot();
+    QVector<double> x = QVector<double>(model->sampleSizeInterval().begin(),model->sampleSizeInterval().end());
+    QVector<double> y  = QVector<double>(model->powerDependency().begin(),model->powerDependency().end());
+    customPlot->addGraph();
+    customPlot->graph(0)->setData(x,y);
+    customPlot->xAxis->setLabel("Sample Size");
+    customPlot->yAxis->setLabel("Power \t  rate");
+    customPlot->xAxis->setRange(0, model->sampleSize());
+    customPlot->yAxis->setRange(0, model->maxPowerLevel() + model->maxPowerLevel() * 0.1);
+    customPlot->replot();
+
+    return customPlot;
+
+
+
 
 }
 
@@ -259,12 +243,18 @@ void MainWindow::on_actionCreate_triggered()
     Dialog_model * dlg = new Dialog_model(this,m_model);
 
     dlg->exec();
-    clearLayout();
-    m_model->InitHistogram();
-    m_chartSampleHistogram = createChartHistogram(m_model->histogram());
-    if (m_chartSampleHistogram){
-        load();
+
+    if (dlg->result() == QDialog::Accepted) {
+        clearLayout();
+        m_model->InitHistogram();
+        m_model->InitPlevelsIntervals();
+        m_chartSampleHistogram = createChartHistogram(m_model->histogram());
+        if (m_chartSampleHistogram){
+            ui->verticalLayout_2->addWidget(m_chartSampleHistogram);
+        }
     }
+
+
 
     delete dlg;
 
@@ -281,14 +271,18 @@ void MainWindow::on_actionGenerate_P_Levels_triggered()
     Dialog_Plevels * dlg = new Dialog_Plevels(this,m_model);
 
     dlg->exec();
-    clearLayout();
-    m_model->InitHistogram();
-    m_model->InitPlevelsIntervals();
-    m_model->createPlevelsSample();
-    m_chartPlevels = createPlevelsChart(m_model);
-    if (m_chartPlevels){
-         loadPlevelsChart();
+
+    if (dlg->result() == QDialog::Accepted) {
+        clearLayout();
+        m_model->InitHistogram();
+        m_model->InitPlevelsIntervals();
+        m_model->createPlevelsSample();
+        m_chartPlevels = createPlevelsChart(m_model);
+        if (m_chartPlevels){
+            ui->verticalLayout_2->addWidget(m_chartPlevels);
+        }
     }
+
 
 
     delete dlg;
@@ -302,27 +296,19 @@ void MainWindow::on_actionPower_triggered()
 
     Dialog_Power * dlg = new Dialog_Power(this,m_model);
     dlg->exec();
-    clearLayout();
-    m_model->InitHistogram();
-    m_model->InitPlevelsIntervals();
-    m_model->createPlevelsDistribution();
-    m_chartPower = createPowerChart(m_model);
+    if (dlg->result() == QDialog::Accepted) {
+        clearLayout();
+        m_model->InitHistogram();
+        m_model->InitPlevelsIntervals();
+        m_model->createPlevelsDistribution();
+        m_chartPower = createPowerChart(m_model);
 
-//    qDebug() << "m_plevelDistribution MainWindow \n";
-//    for (size_t i = 0; i < m_model->plevelDistribution().size(); ++i) {
-//         qDebug() << "Step: " << i << " Value :" << m_model->plevelDistribution().at(i) << "\n";
-//    }
-//    qDebug() << "plevelsInteravals MainWindow \n";
-//    for (size_t i = 0; i < m_model->plevelsInteravals().size(); ++i) {
-//         qDebug() << "Step: " << i << " Value :" << m_model->plevelsInteravals().at(i) << "\n";
-//    }
+        if (m_chartPower){
 
-
-
-    if (m_chartPower){
-       qDebug() << "loadPowerChart\n";
-         loadPowerChart();
+             ui->verticalLayout_2->addWidget(m_chartPower);
+        }
     }
+
 
 
     delete dlg;
@@ -332,10 +318,20 @@ void MainWindow::on_actionPower_triggered()
 void MainWindow::on_actionPower_Analysis_triggered()
 {
     Dialog_PowerAnalysis * dlg = new Dialog_PowerAnalysis(this,m_model);
+
     dlg->exec();
-    clearLayout();
 
+     if (dlg->result() == QDialog::Accepted) {
+         clearLayout();
+         m_model->InitHistogram();
+         m_model->createPowerDependencyTable();
+         m_chartPowerDependency = createPowerDependencyChart(m_model);
 
+         if (m_chartPowerDependency){
+              ui->verticalLayout_2->addWidget(m_chartPowerDependency);
+         }
+
+     }
 
     delete dlg;
 
@@ -355,38 +351,14 @@ void MainWindow::clearLayout()
     } else if (m_chartPower) {
         ui->verticalLayout_2->removeWidget(m_chartPower);
         m_chartPower = nullptr;
+    } else if (m_chartPowerDependency) {
+        ui->verticalLayout_2->removeWidget(m_chartPowerDependency);
+        m_chartPowerDependency = nullptr;
     }
-
     ui->verticalLayout_2->update();
 }
 
 
 
-QChartView *MainWindow::chartPlevels() const
-{
-    return m_chartPlevels;
-}
 
 
-
-QChartView *MainWindow::chartView() const
-{
-    return m_chartSampleHistogram;
-}
-
-void MainWindow::load()
-{
-
-
-    ui->verticalLayout_2->addWidget(m_chartSampleHistogram);
-}
-
-void MainWindow::loadPlevelsChart() const
-{
-    ui->verticalLayout_2->addWidget(m_chartPlevels);
-}
-
-void MainWindow::loadPowerChart() const
-{
-    ui->verticalLayout_2->addWidget(m_chartPower);
-}

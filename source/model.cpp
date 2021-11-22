@@ -131,6 +131,53 @@ void Model::createPlevelsDistribution()
 
 }
 
+void Model::createPowerDependencyTable()
+{
+
+
+    m_sampleSizeInterval = {100,200,500,1000,2000,5000,7500,10000};
+
+    m_powerDependency.resize(m_sampleSizeInterval.size(),0);
+    qDebug() << "Intervals for ssampleSize";
+    for (auto & el : m_sampleSizeInterval){
+        qDebug() << el << " ";
+    }
+
+
+    for (size_t i = 0; i < m_sampleSizeInterval.size(); ++i) {
+        m_histogram->setSampleSize(static_cast<uint64_t>(m_sampleSizeInterval[i]));
+        m_sampleSize = m_sampleSizeInterval[i];
+        for (size_t j = 0; j < m_plevelsSize; ++j){
+            m_histogram->calcChi();
+            if (m_histogram->pvalue() < m_significanceLevel) {
+                ++m_powerDependency[i];
+                continue;
+            }
+        }
+
+    }
+
+    m_maxPowerLevel = 0;
+    for (size_t i = 0; i < m_powerDependency.size(); ++i){
+        m_powerDependency[i] /= m_plevelsSize;
+        if (m_powerDependency[i] > m_maxPowerLevel  ) {
+            m_maxPowerLevel = m_powerDependency[i];
+        }
+    }
+
+    // Тест
+    qDebug() << "m_powerDependency \n";
+    for (size_t i = 0; i < m_powerDependency.size(); ++i) {
+         qDebug() << "N: " << m_sampleSizeInterval[i] << " Value :" << m_powerDependency[i] << "\n";
+    }
+
+
+
+
+
+
+}
+
 uint64_t Model::sampleSize() const
 {
     return m_sampleSize;
@@ -216,7 +263,7 @@ const std::vector<double> &Model::plevelObservedCDF() const
     return m_plevelObservedCDF;
 }
 
-void Model::setGenerator(Generator *newGenerator)
+void Model::setGenerator(Generator * newGenerator)
 
 {
     if (m_generator) {
@@ -233,4 +280,29 @@ const std::vector<double> &Model::plevelDistribution() const
 uint32_t Model::plevelsInteravalsSize() const
 {
     return m_plevelsInteravalsSize;
+}
+
+const std::vector<double> &Model::powerDependency() const
+{
+    return m_powerDependency;
+}
+
+double Model::significaneLevel() const
+{
+    return m_significanceLevel;
+}
+
+void Model::setSignificaneLevel(double newSignificaneLevel)
+{
+    m_significanceLevel = newSignificaneLevel;
+}
+
+const std::vector<double> &Model::sampleSizeInterval() const
+{
+    return m_sampleSizeInterval;
+}
+
+double Model::maxPowerLevel() const
+{
+    return m_maxPowerLevel;
 }
