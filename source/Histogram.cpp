@@ -2,8 +2,13 @@
 #include <cassert>
 #include "Histogram.h"
  Histogram::Histogram(Generator *  sampleGenerator, size_t sampleSize):
-    m_sampleGenerator(sampleGenerator),
-    m_sampleSize(sampleSize){};
+     m_sampleGenerator(sampleGenerator),
+     m_sampleSize(sampleSize){}
+
+ Histogram::~Histogram()
+ {
+     delete m_uniform;
+ };
 
 
 void Histogram::GenerateSample()  {

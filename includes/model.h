@@ -12,33 +12,53 @@ class Model
 {
 public:
     Model(Generator * generator);
+    Model();
     ~Model();
 
-     Distribution getD0() const;
-    void setD0(const Distribution &newD0);
 
-     Distribution getD1() const;
-    void setD1(const Distribution &newD1);
-
-    uint32_t distSize() const;
+    // Getters
+    Generator *generator() const;
+    Histogram *histogram() const;
+    Distribution getD0() const;
+    Distribution getD1() const;
     uint32_t plevelsInteravalsSize() const;
     uint32_t plevelsSize() const;
-    void setPlevelsSize(uint32_t newPlevelsSize);
-
-    Histogram *histogram() const;
     uint64_t sampleSize() const;
+    double significaneLevel() const;
+    double maxPowerLevel() const;
+    bool isPowerEstimate() const;
 
+
+    const std::vector<double> &plevelsInteravals() const;
+    const std::vector<double> &plevelObservedCDF() const;
+    const std::vector<double> &plevelDistribution() const;
+    const std::vector<double> &powerDependency() const;
+    const std::vector<double> &sampleSizeInterval() const;
+
+
+
+    // Setters
+    void setD0(const Distribution &newD0);
+    void setD1(const Distribution &newD1);
+    void setPlevelsSize(uint32_t newPlevelsSize);
     void setSampleSize(uint64_t newSampleSize);
-    void setDistSize(uint32_t newDistSize);
     void setGenerator(Generator  * newGenerator);
+    void setSignificaneLevel(double newSignificaneLevel);
+    void setIsPowerEstimate(bool newIsPowerEstimate);
+    void setSampleSizeInterval(const std::vector<double> &newSampleSizeInterval);
 
 
+
+    // Core
     void createPlevelsSample();
     void createPlevelsDistribution();
-    void createPowerDependencyTable();
+    void createPowerDependencyTable(); // Зависимость мощности от объема выборки
     void InitPlevelsIntervals();
-    void InitModel();
     void InitHistogram();
+
+
+
+    //Test
     void PrintPlevels() const;
 
 
@@ -46,38 +66,35 @@ public:
 
 
 
-
-    const std::vector<double> &plevelsInteravals() const;
-    const std::vector<double> &plevelObservedCDF() const;
-    const std::vector<double> &plevelDistribution() const;
-    const std::vector<double> &powerDependency() const;
-
-    double significaneLevel() const;
-    void setSignificaneLevel(double newSignificaneLevel);
-
-    const std::vector<double> &sampleSizeInterval() const;
-
-    double maxPowerLevel() const;
+     std::string generatorMethod() const;
+    void setGeneratorMethod( std::string newGeneratorMethod);
 
 private:
 
 
     Distribution d0,d1;
     Generator * m_generator = nullptr;
+    std::string m_generatorMethod;
     Histogram * m_histogram = nullptr;
-    double m_currentPvalue = 0;
-    double m_significanceLevel = 0;
-    double m_maxPowerLevel = 0;
-    uint64_t m_sampleSize = 0;
-    uint32_t m_distSize = 0;
-    uint32_t m_plevelsSize = 0;
+
+
+
+    double m_currentPvalue = 0; // текущее p-value
+    double m_significanceLevel = 0; // уровень значимости (alpha)
+    double m_maxPowerLevel = 0; // Максимальный уровень мощности (нужен для посторения графика)
+    uint64_t m_sampleSize = 0; // Объем выборки для моделирования
+    uint64_t m_sampleSizeForPlevels = 0; // Объём выбооки для моделирования plevels
+    uint32_t m_plevelsSize = 0; // Объем моделирования выборки p-levels
     uint32_t m_plevelsInteravalsSize = 20; // Количество интервалов для разбиения
 
-    std::vector<double> m_sampleSizeInterval;
-    std::vector<double> m_powerDependency;
-    std::vector<double> m_plevelsInteravals;
-    std::vector<double> m_plevelObservedCDF;
-    std::vector<double> m_plevelDistribution;
+
+    bool m_isPowerEstimate = true; // Оцениваем мощность или ошибку первого рода
+
+    std::vector<double> m_sampleSizeInterval; // Объемы выборок, для которых считаем мощность
+    std::vector<double> m_powerDependency; // Мощности для кажого объема выборки
+    std::vector<double> m_plevelsInteravals; //  Значения теоретической ф.р plevels
+    std::vector<double> m_plevelObservedCDF; // Значения эмирической ф.р plevels
+    std::vector<double> m_plevelDistribution; // Мощности/Ошибки первого рода для каждого уровня alpha
 
 
 

@@ -9,12 +9,12 @@ std::vector<double> DialogHandler::parseTxtToVector(QLineEdit *  lineEdit)
 {
     QString txt  = lineEdit->text();
     QStringList value_list = txt.split(",");
-    std::vector<double> v(value_list.size());
+    std::vector<double> v;
     bool ok;
-    for (size_t i = 0 ; i < value_list.size(); ++i){
+    for (qsizetype i = 0 ; i < value_list.size(); ++i){
        double value = value_list[i].toDouble(&ok);
        if (ok && value > 0) {
-           v[i] = value;
+           v.push_back(value);
            qDebug() << v[i] << " ";
        }
 
@@ -30,7 +30,7 @@ bool DialogHandler::checkSamleSize(QLineEdit *  lineEdit)
     QMessageBox msgBox;
     const uint64_t SAMPLE_MAX_SIZE = 10e8;
     const uint64_t SAMPLE_BASE_SIZE = 10e4;
-    int64_t sampleSize = lineEdit->text().toUInt(&ok);
+    uint64_t sampleSize = lineEdit->text().toUInt(&ok);
     if (!ok ) {
 
         msgBox.setText("Объём выборки должен быть целым положительным числом.");
@@ -47,6 +47,8 @@ bool DialogHandler::checkSamleSize(QLineEdit *  lineEdit)
     else {
         return true;
     }
+
+    return false;
 }
 
 

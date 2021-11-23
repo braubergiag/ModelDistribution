@@ -25,19 +25,29 @@ Dialog_model::~Dialog_model()
 void Dialog_model::on_buttonBox_accepted()
 {
     uint64_t sampleSize = 0;
-    if (!dialogHandler.checkSamleSize(ui->lbSampleSize)) return;
+    if (!dialogHandler.checkSamleSize(ui->lbSampleSize)) reject();
     sampleSize = ui->lbSampleSize->text().toUInt();
+     std::vector<double> p0 = dialogHandler.parseTxtToVector(ui->txtProbs);
+    if (p0.size() == 0) {
+        reject();
+        return;
+
+    }
     Generator * generator;
-    std::vector<double> d0 = dialogHandler.parseTxtToVector(ui->txtProbs);
+
     if (ui->rbTID->isChecked()) {;
-         generator = new TID_Generator(Distribution(d0));
+         generator = new TID_Generator(Distribution(p0));
+         m_model->setGeneratorMethod(ui->rbTID->text().toStdString());
     } else if (ui->rbTIS->isChecked()) {
-        generator = new  TISM_Generator(Distribution(d0));
+        generator = new  TISM_Generator(Distribution(p0));
+        m_model->setGeneratorMethod(ui->rbTIS->text().toStdString());
+
     }
 
     m_model->setGenerator(generator);
     m_model->setSampleSize(sampleSize);
-    m_model->setD0(Distribution(d0));
+    m_model->setD0(Distribution(p0));
+
 
 
 

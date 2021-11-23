@@ -6,6 +6,11 @@ Model::Model(Generator * generator) : m_generator(generator)
 
 }
 
+Model::Model()
+{
+
+}
+
 Model::~Model()
 {
 
@@ -135,10 +140,10 @@ void Model::createPowerDependencyTable()
 {
 
 
-    m_sampleSizeInterval = {100,200,500,1000,2000,5000,7500,10000};
+    if (m_sampleSizeInterval.size() == 0) return;
 
     m_powerDependency.resize(m_sampleSizeInterval.size(),0);
-    qDebug() << "Intervals for ssampleSize";
+    qDebug() << "Intervals for sampleSize";
     for (auto & el : m_sampleSizeInterval){
         qDebug() << el << " ";
     }
@@ -146,7 +151,6 @@ void Model::createPowerDependencyTable()
 
     for (size_t i = 0; i < m_sampleSizeInterval.size(); ++i) {
         m_histogram->setSampleSize(static_cast<uint64_t>(m_sampleSizeInterval[i]));
-        m_sampleSize = m_sampleSizeInterval[i];
         for (size_t j = 0; j < m_plevelsSize; ++j){
             m_histogram->calcChi();
             if (m_histogram->pvalue() < m_significanceLevel) {
@@ -212,10 +216,6 @@ void Model::InitPlevelsIntervals()
 
 }
 
-void Model::InitModel()
-{
-    m_distSize = d0.getDistributionSize();
-}
 
 void Model::InitHistogram()
 {
@@ -228,6 +228,8 @@ void Model::InitHistogram()
          m_histogram->setD0(d0);
 
          m_histogram->Init();
+    } else {
+        qDebug() << "Cannot initilize histogram \n";
     }
 
 }
@@ -241,16 +243,37 @@ void Model::PrintPlevels() const
 
 }
 
-uint32_t Model::distSize() const
+ std::string Model::generatorMethod() const
 {
-    return m_distSize;
+    return m_generatorMethod;
 }
 
-void Model::setDistSize(uint32_t newDistSize)
+void Model::setGeneratorMethod( std::string newGeneratorMethod)
 {
-    m_distSize = newDistSize;
+    m_generatorMethod = newGeneratorMethod;
 }
 
+void Model::setSampleSizeInterval(const std::vector<double> &newSampleSizeInterval)
+{
+    m_sampleSizeInterval = newSampleSizeInterval;
+}
+
+
+
+
+void Model::setGenerator(Generator *newGeneratorSample)
+
+{
+    if (m_generator){
+        delete m_generator;
+    }
+    m_generator = newGeneratorSample;
+}
+
+Generator *Model::generator() const
+{
+    return m_generator;
+}
 
 
 const std::vector<double> &Model::plevelsInteravals() const
@@ -263,14 +286,7 @@ const std::vector<double> &Model::plevelObservedCDF() const
     return m_plevelObservedCDF;
 }
 
-void Model::setGenerator(Generator * newGenerator)
 
-{
-    if (m_generator) {
-        delete m_generator;
-    }
-    m_generator = newGenerator;
-}
 
 const std::vector<double> &Model::plevelDistribution() const
 {
@@ -305,4 +321,14 @@ const std::vector<double> &Model::sampleSizeInterval() const
 double Model::maxPowerLevel() const
 {
     return m_maxPowerLevel;
+}
+
+bool Model::isPowerEstimate() const
+{
+    return m_isPowerEstimate;
+}
+
+void Model::setIsPowerEstimate(bool newIsPowerEstimate)
+{
+    m_isPowerEstimate = newIsPowerEstimate;
 }

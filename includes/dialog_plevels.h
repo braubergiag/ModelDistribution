@@ -24,6 +24,8 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_buttonBox_rejected();
+
 private:
     bool checkSamleSize() const;
     Ui::Dialog_Plevels *ui;

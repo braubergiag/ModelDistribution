@@ -10,6 +10,7 @@
 class Histogram {
 public:
     Histogram(Generator *  sampleGenerator,size_t sampleSize);
+    ~Histogram();
 
     void GenerateSample();
     void calcChi();

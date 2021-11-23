@@ -1,5 +1,4 @@
-QT       += core gui printsupport charts
-QT += charts
+QT       += core gui printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++17
@@ -8,6 +7,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    source/graphcreator.cpp \
     source/qcustomplot.cpp \
     source/dialog_poweranalysis.cpp \
     source/dialoghandler.cpp \
@@ -25,6 +25,7 @@ SOURCES += \
     source/probdist.cpp
 
 HEADERS += \
+    includes/graphcreator.h \
     includes/qcustomplot.h \
     includes/dialog_poweranalysis.h \
     includes/dialoghandler.h \
