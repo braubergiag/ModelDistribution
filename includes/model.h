@@ -30,9 +30,9 @@ public:
 
 
     const std::vector<double> &plevelsInteravals() const;
-    const std::vector<double> &plevelObservedCDF() const;
-    const std::vector<double> &plevelDistribution() const;
-    const std::vector<double> &powerDependency() const;
+    const std::vector<uint32_t> &plevelObservedCDF() const;
+    const std::vector<uint32_t> &plevelDistribution() const;
+
     const std::vector<double> &sampleSizeInterval() const;
 
 
@@ -69,6 +69,12 @@ public:
      std::string generatorMethod() const;
     void setGeneratorMethod( std::string newGeneratorMethod);
 
+    const std::vector<double> &powerDependencyNormalized() const;
+
+    const std::vector<double> &plevelObservedCDFNormalized() const;
+
+    const std::vector<double> &plevelDistributionNormalized() const;
+
 private:
 
 
@@ -91,10 +97,13 @@ private:
     bool m_isPowerEstimate = true; // Оцениваем мощность или ошибку первого рода
 
     std::vector<double> m_sampleSizeInterval; // Объемы выборок, для которых считаем мощность
-    std::vector<double> m_powerDependency; // Мощности для кажого объема выборки
+    std::vector<uint32_t> m_powerDependency; // Мощности для кажого объема выборки
+    std::vector<double> m_powerDependencyNormalized;
     std::vector<double> m_plevelsInteravals; //  Значения теоретической ф.р plevels
-    std::vector<double> m_plevelObservedCDF; // Значения эмирической ф.р plevels
-    std::vector<double> m_plevelDistribution; // Мощности/Ошибки первого рода для каждого уровня alpha
+    std::vector<uint32_t> m_plevelObservedCDF; // Значения эмирической ф.р plevels
+    std::vector<double> m_plevelObservedCDFNormalized;
+    std::vector<uint32_t> m_plevelDistribution; // Мощности/Ошибки первого рода для каждого уровня alpha
+    std::vector<double> m_plevelDistributionNormalized;
 
 
 

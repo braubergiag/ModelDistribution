@@ -57,6 +57,7 @@ void Model::createPlevelsSample()
 {
 
 
+    m_plevelObservedCDF.clear();
     m_plevelObservedCDF.resize(m_plevelsInteravalsSize,0);
 
     // Здесь вычисляется, сколько значений pvalue попало в каждую ячейку
@@ -80,14 +81,16 @@ void Model::createPlevelsSample()
 
 
     // Нормировка
-    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
-        m_plevelObservedCDF[i] /= m_plevelsSize;
+    m_plevelObservedCDFNormalized.clear();
+    m_plevelObservedCDFNormalized.resize(m_plevelObservedCDF.size(),0);
+    for (size_t i = 0; i < m_plevelObservedCDFNormalized.size(); ++i) {
+        m_plevelObservedCDFNormalized[i] = static_cast<double>(m_plevelObservedCDF[i]) /  m_plevelsSize;
     }
 
     // Cчитаем накопленные вероятности
 
-        for (size_t i = 1; i < m_plevelObservedCDF.size(); ++i) {
-            m_plevelObservedCDF[i] += m_plevelObservedCDF[i - 1];
+        for (size_t i = 1; i < m_plevelObservedCDFNormalized.size(); ++i) {
+            m_plevelObservedCDFNormalized[i] += m_plevelObservedCDFNormalized[i - 1];
         }
 
 
@@ -96,8 +99,8 @@ void Model::createPlevelsSample()
 
     // Тест
     qDebug() << "m_plevelObservedCDF \n";
-    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
-         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDF[i] << "\n";
+    for (size_t i = 0; i < m_plevelObservedCDFNormalized.size(); ++i) {
+         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDFNormalized[i] << "\n";
     }
 
 
@@ -108,6 +111,7 @@ void Model::createPlevelsSample()
 
 void Model::createPlevelsDistribution()
 {
+    m_plevelDistribution.clear();
     m_plevelDistribution.resize(m_plevelsInteravalsSize,0);
 
 
@@ -122,14 +126,17 @@ void Model::createPlevelsDistribution()
     }
    }
 
+
+   m_plevelDistributionNormalized.clear();
+   m_plevelDistributionNormalized.resize(m_plevelDistribution.size(),0);
    // Нормировка
    for (size_t i = 0; i < m_plevelDistribution.size(); ++i) {
-       m_plevelDistribution[i] /= m_plevelsSize;
+       m_plevelDistributionNormalized[i] = static_cast<double>(m_plevelDistribution[i]) / m_plevelsSize;
    }
    // Тест
    qDebug() << "m_plevelDistribution \n";
-   for (size_t i = 0; i < m_plevelDistribution.size(); ++i) {
-        qDebug() << "Step: " << i << " Value :" << m_plevelDistribution[i] << "\n";
+   for (size_t i = 0; i < m_plevelDistributionNormalized.size(); ++i) {
+        qDebug() << "Step: " << i << " Value :" << m_plevelDistributionNormalized[i] << "\n";
    }
 
 
@@ -142,6 +149,7 @@ void Model::createPowerDependencyTable()
 
     if (m_sampleSizeInterval.size() == 0) return;
 
+    m_powerDependency.clear();
     m_powerDependency.resize(m_sampleSizeInterval.size(),0);
     qDebug() << "Intervals for sampleSize";
     for (auto & el : m_sampleSizeInterval){
@@ -162,17 +170,19 @@ void Model::createPowerDependencyTable()
     }
 
     m_maxPowerLevel = 0;
+    m_powerDependencyNormalized.clear();
+    m_powerDependencyNormalized.resize(m_powerDependency.size(),0);
     for (size_t i = 0; i < m_powerDependency.size(); ++i){
-        m_powerDependency[i] /= m_plevelsSize;
-        if (m_powerDependency[i] > m_maxPowerLevel  ) {
-            m_maxPowerLevel = m_powerDependency[i];
+        m_powerDependencyNormalized[i] = static_cast<double>(m_powerDependency[i]) / m_plevelsSize;
+        if (m_powerDependencyNormalized[i] > m_maxPowerLevel  ) {
+            m_maxPowerLevel = m_powerDependencyNormalized[i];
         }
     }
 
     // Тест
     qDebug() << "m_powerDependency \n";
-    for (size_t i = 0; i < m_powerDependency.size(); ++i) {
-         qDebug() << "N: " << m_sampleSizeInterval[i] << " Value :" << m_powerDependency[i] << "\n";
+    for (size_t i = 0; i < m_powerDependencyNormalized.size(); ++i) {
+         qDebug() << "N: " << m_sampleSizeInterval[i] << " Value :" << m_powerDependencyNormalized[i] << "\n";
     }
 
 
@@ -253,6 +263,21 @@ void Model::setGeneratorMethod( std::string newGeneratorMethod)
     m_generatorMethod = newGeneratorMethod;
 }
 
+const std::vector<double> &Model::powerDependencyNormalized() const
+{
+    return m_powerDependencyNormalized;
+}
+
+const std::vector<double> &Model::plevelObservedCDFNormalized() const
+{
+    return m_plevelObservedCDFNormalized;
+}
+
+const std::vector<double> &Model::plevelDistributionNormalized() const
+{
+    return m_plevelDistributionNormalized;
+}
+
 void Model::setSampleSizeInterval(const std::vector<double> &newSampleSizeInterval)
 {
     m_sampleSizeInterval = newSampleSizeInterval;
@@ -281,14 +306,14 @@ const std::vector<double> &Model::plevelsInteravals() const
     return m_plevelsInteravals;
 }
 
-const std::vector<double> &Model::plevelObservedCDF() const
+const std::vector<uint32_t> &Model::plevelObservedCDF() const
 {
     return m_plevelObservedCDF;
 }
 
 
 
-const std::vector<double> &Model::plevelDistribution() const
+const std::vector<uint32_t> &Model::plevelDistribution() const
 {
     return m_plevelDistribution;
 }
@@ -298,10 +323,7 @@ uint32_t Model::plevelsInteravalsSize() const
     return m_plevelsInteravalsSize;
 }
 
-const std::vector<double> &Model::powerDependency() const
-{
-    return m_powerDependency;
-}
+
 
 double Model::significaneLevel() const
 {

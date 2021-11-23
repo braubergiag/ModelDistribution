@@ -32,14 +32,12 @@ public:
 
     void loadChart (QCustomPlot * customPlot);
 
-
-
     void clearLayout();
 
 private slots:
 
 
-    void on_actionCreate_triggered();
+    void on_actionCreateSampleChart_triggered();
 
     void on_actionGenerate_P_Levels_triggered();
 
@@ -56,6 +54,8 @@ private slots:
     void on_actionSetPower_Analysis_triggered();
 
 
+    void on_actionQuit_triggered();
+
 private:
 
     bool m_isSampleConfigReady = false;
@@ -65,7 +65,6 @@ private:
 
 
     GraphCreator * m_graphCreator = nullptr;
-    QString graphInfo;
 
     QCustomPlot * m_chartSampleHistogram = nullptr;
     QCustomPlot * m_chartPlevels = nullptr;

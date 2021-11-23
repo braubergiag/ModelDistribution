@@ -8,10 +8,10 @@
 class GraphCreator
 {
 public:
-    QCustomPlot * createChartHistogram(Model * model,QString & info);
-    QCustomPlot * createPlevelsGraph(Model  * model,QString & info);
-    QCustomPlot * createPowerGraph(Model * model,QString & info);
-    QCustomPlot * createPowerDependencyGraph(Model * model,QString & info);
+    QCustomPlot * createChartHistogram(Model * model);
+    QCustomPlot * createPlevelsGraph(Model  * model);
+    QCustomPlot * createPowerGraph(Model * model);
+    QCustomPlot * createPowerDependencyGraph(Model * model);
     GraphCreator();
 };
 

@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_modelSample->setSampleSize(demoSampleSize);
     m_modelSample->setD0(d0);
     m_modelSample->setGeneratorMethod("Table Inverse Dichatomy");
-    m_chartSampleHistogram = m_graphCreator->createChartHistogram(m_modelSample,graphInfo);
+    m_chartSampleHistogram = m_graphCreator->createChartHistogram(m_modelSample);
     loadChart(m_chartSampleHistogram);
     m_isSampleConfigReady = true;
 
@@ -51,18 +51,17 @@ void MainWindow::loadChart(QCustomPlot *customPlot)
 
     if (customPlot){
 
-        ui->txtDistributionInfo->setText(graphInfo);
         ui->verticalLayout_2->addWidget(customPlot);
     }
 }
 
 
 // Нажатие кнопки Generate Sample
-void MainWindow::on_actionCreate_triggered()
+void MainWindow::on_actionCreateSampleChart_triggered()
 {
     if (m_isSampleConfigReady){
           clearLayout();
-        m_chartSampleHistogram = m_graphCreator->createChartHistogram(m_modelSample,graphInfo);
+        m_chartSampleHistogram = m_graphCreator->createChartHistogram(m_modelSample);
         loadChart(m_chartSampleHistogram);
     } else {
         on_actionSetSample_triggered();
@@ -75,7 +74,7 @@ void MainWindow::on_actionGenerate_P_Levels_triggered()
 {
     if (m_isPlevelConfigReady) {
           clearLayout();
-        m_chartPlevels = m_graphCreator->createPlevelsGraph(m_modelPlevels,graphInfo);
+        m_chartPlevels = m_graphCreator->createPlevelsGraph(m_modelPlevels);
         loadChart(m_chartPlevels);
     } else {
         on_actionSetPlevels_triggered();
@@ -89,7 +88,7 @@ void MainWindow::on_actionPower_triggered()
 {
     if (m_isPowerConfigReady){
           clearLayout();
-        m_chartPower = m_graphCreator->createPowerGraph(m_modelPower,graphInfo);
+        m_chartPower = m_graphCreator->createPowerGraph(m_modelPower);
         loadChart(m_chartPower);
     } else {
        on_actionSetPower_triggered();
@@ -101,7 +100,7 @@ void MainWindow::on_actionGenPower_Analysis_triggered()
 
      if (m_isPowerAnalisysConfigReady) {
            clearLayout();
-         m_chartPowerDependency = m_graphCreator->createPowerDependencyGraph(m_modelPowerAnalysis,graphInfo);
+         m_chartPowerDependency = m_graphCreator->createPowerDependencyGraph(m_modelPowerAnalysis);
          loadChart(m_chartPowerDependency);
 
      } else {
@@ -112,6 +111,8 @@ void MainWindow::on_actionGenPower_Analysis_triggered()
 
 void MainWindow::clearLayout()
 {
+
+
     if (m_chartPlevels) {
         ui->verticalLayout_2->removeWidget(m_chartPlevels);
         m_chartPlevels = nullptr;
@@ -126,6 +127,7 @@ void MainWindow::clearLayout()
         ui->verticalLayout_2->removeWidget(m_chartPowerDependency);
         m_chartPowerDependency = nullptr;
     }
+
     ui->verticalLayout_2->update();
 }
 
@@ -138,7 +140,8 @@ void MainWindow::on_actionSetSample_triggered()
     if (dlg->result() == QDialog::Accepted) {
         m_isSampleConfigReady = true;
           clearLayout();
-        m_chartSampleHistogram = m_graphCreator->createChartHistogram(m_modelSample,graphInfo);
+
+        m_chartSampleHistogram = m_graphCreator->createChartHistogram(m_modelSample);
         loadChart(m_chartSampleHistogram);
     } else if (dlg->result() == QDialog::Rejected){
         qDebug() << "Rejected.\n";
@@ -155,7 +158,7 @@ void MainWindow::on_actionSetPlevels_triggered()
     if (dlg->result() == QDialog::Accepted) {
         m_isPlevelConfigReady = true;
           clearLayout();
-        m_chartPlevels = m_graphCreator->createPlevelsGraph(m_modelPlevels,graphInfo);;
+        m_chartPlevels = m_graphCreator->createPlevelsGraph(m_modelPlevels);;
         loadChart(m_chartPlevels);
     } else if (dlg->result() == QDialog::Rejected){
         qDebug() << "Rejected.\n";
@@ -170,8 +173,8 @@ void MainWindow::on_actionSetPower_triggered()
     dlg->exec();
     if (dlg->result() == QDialog::Accepted) {
         m_isPowerConfigReady = true;
-          clearLayout();
-        m_chartPower = m_graphCreator->createPowerGraph(m_modelPower,graphInfo);
+        clearLayout();
+        m_chartPower = m_graphCreator->createPowerGraph(m_modelPower);
         loadChart(m_chartPower);
     } else if (dlg->result() == QDialog::Rejected){
         qDebug() << "Rejected.\n";
@@ -187,12 +190,18 @@ void MainWindow::on_actionSetPower_Analysis_triggered()
     if (dlg->result() == QDialog::Accepted) {
          m_isPowerAnalisysConfigReady = true;
           clearLayout();
-         m_chartPowerDependency = m_graphCreator->createPowerDependencyGraph(m_modelPowerAnalysis,graphInfo);
+         m_chartPowerDependency = m_graphCreator->createPowerDependencyGraph(m_modelPowerAnalysis);
          loadChart(m_chartPowerDependency);
 
      } else if (dlg->result() == QDialog::Rejected){
         qDebug() << "Rejected.\n";
     }
     delete dlg;
+}
+
+
+void MainWindow::on_actionQuit_triggered()
+{
+    QApplication::quit();
 }
 

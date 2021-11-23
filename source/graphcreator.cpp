@@ -6,7 +6,7 @@ GraphCreator::GraphCreator()
 }
 
 
-QCustomPlot * GraphCreator::createChartHistogram(Model * model,QString & info)
+QCustomPlot * GraphCreator::createChartHistogram(Model * model)
 {
 
     // Prepare model
@@ -60,9 +60,8 @@ QCustomPlot * GraphCreator::createChartHistogram(Model * model,QString & info)
      textTicker->addTicks(ticks, labels);
      customPlot->xAxis->setTicker(textTicker);
      customPlot->xAxis->setRange(-1, maxXValue + 1);
-    // customPlot->setName("Discrete Distribution Sample");
 
-    expected->setData(x_expected,y_expected);
+     expected->setData(x_expected,y_expected);
      observed->setData(x_observed,y_observed);
 
 
@@ -79,7 +78,7 @@ QCustomPlot * GraphCreator::createChartHistogram(Model * model,QString & info)
 
 
 
-    info = "Sample size: " + QString::number(model->histogram()->sampleSize())
+    QString info = "Sample size: " + QString::number(model->histogram()->sampleSize())
             +   "\t Chi-sqaure: " + QString::number(model->histogram()->chi())
             +   "\t Degrees of freedom: "
             +   QString::number(model->histogram()->df())
@@ -87,13 +86,15 @@ QCustomPlot * GraphCreator::createChartHistogram(Model * model,QString & info)
             +   "\t Method: " + QString::fromStdString(model->generatorMethod());
 
 
+    customPlot->plotLayout()->insertRow(0);
+    customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(customPlot, info, QFont("sans", 10, QFont::Normal)));
 
     customPlot->replot();
     return customPlot;
 
 }
 
-QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model,QString & info)
+QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model)
 
 {
     // Prepare model
@@ -105,7 +106,7 @@ QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model,QString & info)
 
 
     QVector<double> x_observedCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
-    QVector<double> y_observedCDF  = QVector<double>(model->plevelObservedCDF().begin(),model->plevelObservedCDF().end());
+    QVector<double> y_observedCDF  = QVector<double>(model->plevelObservedCDFNormalized().begin(),model->plevelObservedCDFNormalized().end());
 
 
     QVector<double> x_empiricalCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
@@ -129,7 +130,7 @@ QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model,QString & info)
     customPlot->graph(1)->setName("Empirical Plevels CDF");
     customPlot->graph(1)->setPen(QPen(Qt::red));
     customPlot->xAxis->setLabel("x");
-    customPlot->yAxis->setLabel("Plevels CDFs F(x)");
+    customPlot->yAxis->setLabel("Plevels CDFs \t F(x)");
 
 
 
@@ -162,25 +163,27 @@ QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model,QString & info)
 
 
 
-    info =  "Sample size: " + QString::number(model->histogram()->sampleSize())
+    QString info =  "Sample size: " + QString::number(model->histogram()->sampleSize())
             + "\t Plevels sample size: " + QString::number(model->plevelsSize())
             + "\t Method: " + QString::fromStdString(model->generatorMethod());
 
+    customPlot->plotLayout()->insertRow(0);
+    customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(customPlot, info, QFont("sans", 10, QFont::Normal)));
      customPlot->replot();
      return customPlot;
 
 }
 
-QCustomPlot *GraphCreator::createPowerGraph(Model *model,QString & info)
+QCustomPlot *GraphCreator::createPowerGraph(Model *model)
 {
 
      model->InitHistogram();
      model->createPlevelsDistribution();
 
      QCustomPlot * customPlot = new QCustomPlot();
-     QString title = model->isPowerEstimate() ? "Power Estimate" : "H0 error Estimate";
+     QString title = model->isPowerEstimate() ? "Power Estimate" : "Type 1 error Estimate";
      QVector<double> x = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
-     QVector<double> y  = QVector<double>(model->plevelDistribution().begin(),model->plevelDistribution().end());
+     QVector<double> y  = QVector<double>(model->plevelDistributionNormalized().begin(),model->plevelDistributionNormalized().end());
      x.insert(0,0);
      y.insert(0,0);
      customPlot->addGraph();
@@ -208,16 +211,18 @@ QCustomPlot *GraphCreator::createPowerGraph(Model *model,QString & info)
 //     customPlot->legend->setFont(legendFont);
      customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
-     info = "Sample size: " + QString::number(model->histogram()->sampleSize())
+     QString info = "Sample size: " + QString::number(model->histogram()->sampleSize())
              +  "\t Plevels sample size: " + QString::number(model->plevelsSize())
              +  "\t Method: " + QString::fromStdString(model->generatorMethod());
 
 
+     customPlot->plotLayout()->insertRow(0);
+     customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(customPlot, info, QFont("sans", 10, QFont::Normal)));
      customPlot->replot();
      return customPlot;
 }
 
-QCustomPlot *GraphCreator::createPowerDependencyGraph(Model *model,QString & info)
+QCustomPlot *GraphCreator::createPowerDependencyGraph(Model *model)
 {
 
     // Prepare model
@@ -227,10 +232,11 @@ QCustomPlot *GraphCreator::createPowerDependencyGraph(Model *model,QString & inf
     QCustomPlot * customPlot = new QCustomPlot();
 
     QVector<double> x = QVector<double>(model->sampleSizeInterval().begin(),model->sampleSizeInterval().end());
-    QVector<double> y  = QVector<double>(model->powerDependency().begin(),model->powerDependency().end());
+    QVector<double> y  = QVector<double>(model->powerDependencyNormalized().begin(),model->powerDependencyNormalized().end());
     customPlot->addGraph();
     customPlot->graph(0)->setData(x,y);
-    customPlot->graph(0)->setName("Power vs. sample size analisys");
+    QString graphTitle = QString("Power vs.sample size \t [ alpha = ") + QString::number(model->significaneLevel()) + QString("]");
+    customPlot->graph(0)->setName(graphTitle);
 
     customPlot->xAxis->setLabel("Sample Size");
     customPlot->yAxis->setLabel("Power \t  rate");
@@ -253,12 +259,21 @@ QCustomPlot *GraphCreator::createPowerDependencyGraph(Model *model,QString & inf
     customPlot->xAxis->setTicker(textTicker);
     customPlot->xAxis->setTickLabelRotation(60);
 
+    customPlot->legend->setVisible(true);
+    customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+    customPlot->legend->setBrush(QColor(255, 255, 255, 100));
+    customPlot->legend->setBorderPen(Qt::NoPen);
+//     QFont legendFont = font();
+//     legendFont.setPointSize(10);
+//     customPlot->legend->setFont(legendFont);
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
 
 
-    customPlot->replot();
-    info = "Plevels sample size: " + QString::number(model->plevelsSize())
+    QString info = "Plevels sample size: " + QString::number(model->plevelsSize())
             +   "\t Method: " + QString::fromStdString(model->generatorMethod());
-
+    customPlot->plotLayout()->insertRow(0);
+    customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(customPlot, info, QFont("sans", 10, QFont::Normal)));
+    customPlot->replot();
     return customPlot;
 }
