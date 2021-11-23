@@ -24,7 +24,7 @@ void Dialog_PowerAnalysis::on_buttonBox_accepted()
     std::vector<double> p0 = dialogHandler.parseTxtToVector(ui->txtD0Probs);
     std::vector<double> p1 = dialogHandler.parseTxtToVector(ui->txtD1Probs);
     std::vector<double> sampleSizesInterval = dialogHandler.parseTxtToVector(ui->txtSampleSizes);
-    if (p0.size() == 0 || p1.size() == 0) {
+    if (p0.size() == 0 || p1.size() == 0 || plevelsSize <= 0) {
         reject();
         return;
     }
@@ -45,6 +45,7 @@ void Dialog_PowerAnalysis::on_buttonBox_accepted()
     m_model->setD0(d0);
     m_model->setSignificaneLevel(ui->cbSignLevel->currentText().toDouble());
     m_model->setSampleSizeInterval(sampleSizesInterval);
+    m_model->setPlevelsSize(plevelsSize);
     qDebug() << "Significance Level " << m_model->significaneLevel();
 
 

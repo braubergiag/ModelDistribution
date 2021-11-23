@@ -60,6 +60,7 @@ void Dialog_Power::on_buttonBox_accepted()
     m_model->setGenerator(generator);
     m_model->setSampleSize(sampleSize);
     m_model->setPlevelsSize(plevelsSize);
+    m_model->InitPlevelsIntervals();
     m_model->setD0(d0);
     m_model->setD1(d1);
 
