@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
-    <height>536</height>
+    <width>722</width>
+    <height>603</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,10 +38,20 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>792</width>
+     <width>722</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuModel">
+    <property name="title">
+     <string>Model</string>
+    </property>
+    <addaction name="actionSetSample"/>
+    <addaction name="actionSetPlevels"/>
+    <addaction name="actionSetPower"/>
+    <addaction name="actionSetPower_Analysis"/>
+   </widget>
+   <addaction name="menuModel"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -60,7 +70,7 @@
    <addaction name="separator"/>
    <addaction name="actionPower"/>
    <addaction name="separator"/>
-   <addaction name="actionPower_Analysis"/>
+   <addaction name="actionGenPower_Analysis"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
    <property name="windowTitle">
@@ -85,12 +95,35 @@
   </action>
   <action name="actionPower">
    <property name="text">
-    <string>Power &amp;&amp; Significance level</string>
+    <string>Generate Power graph</string>
+   </property>
+   <property name="toolTip">
+    <string>Generate Power  chart</string>
    </property>
   </action>
-  <action name="actionPower_Analysis">
+  <action name="actionGenPower_Analysis">
    <property name="text">
-    <string>Power Analysis</string>
+    <string>Generate Power Analysis graph</string>
+   </property>
+  </action>
+  <action name="actionSetSample">
+   <property name="text">
+    <string>Sample</string>
+   </property>
+  </action>
+  <action name="actionSetPlevels">
+   <property name="text">
+    <string>P-levels</string>
+   </property>
+  </action>
+  <action name="actionSetPower">
+   <property name="text">
+    <string>Power</string>
+   </property>
+  </action>
+  <action name="actionSetPower_Analysis">
+   <property name="text">
+    <string>Power Analisys</string>
    </property>
   </action>
  </widget>

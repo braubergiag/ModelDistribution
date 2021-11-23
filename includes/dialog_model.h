@@ -38,10 +38,12 @@ private slots:
 
 private:
     bool checkSamleSize() const;
+    Ui::Dialog_model *ui;
     Model * m_model = nullptr;
     DialogHandler dialogHandler;
 
-    Ui::Dialog_model *ui;
+
+
 };
 
 #endif // DIALOG_MODEL_H

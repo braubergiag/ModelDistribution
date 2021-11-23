@@ -71,7 +71,7 @@ void Histogram::mergeExeptectedValues()
 
 }
 
-int32_t Histogram::distSize() const
+size_t Histogram::distSize() const
 {
     return m_distSize;
 }
@@ -203,22 +203,14 @@ void Histogram::PrintPlevels() {
 
 uint64_t Histogram::MaxFrequency() const{
     uint64_t currentMax_1 = 0;
-    double currentMax_2 = 0;
-    for(auto it = m_observedMerged.cbegin(); it != m_observedMerged.cend(); ++it ) {
+
+    for(auto it = m_expectedMerged.cbegin(); it != m_expectedMerged.cend(); ++it ) {
         if (it ->second > currentMax_1) {
             currentMax_1 = it->second;
         }
     }
 
-
-
-    for(auto it = m_expectedMerged.cbegin(); it != m_expectedMerged.cend(); ++it ) {
-        if (it ->second > currentMax_2) {
-            currentMax_2 = it->second;
-        }
-    }
-    auto val = currentMax_1 > currentMax_2 ? currentMax_1 : currentMax_2;
-    return static_cast<uint64_t>(val);
+    return static_cast<uint64_t>(currentMax_1);
 
 
 }

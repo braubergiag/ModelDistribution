@@ -26,9 +26,10 @@ private slots:
 
 private:
     bool checkSamleSize() const;
+    Ui::Dialog_Plevels *ui;
     Model * m_model = nullptr;
     DialogHandler dialogHandler;
-    Ui::Dialog_Plevels *ui;
+
 };
 
 #endif // DIALOG_PLEVELS_H

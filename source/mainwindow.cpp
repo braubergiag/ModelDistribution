@@ -1,14 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QApplication>
-#include <QtCharts>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QChart>
-#include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QCategoryAxis>
-#include <QtCharts/QChartView>
-
 #include "Distribution.h"
 #include "Generator.h"
 #include "Histogram.h"
@@ -27,8 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_model->setSampleSize(demoSampleSize);
     m_model->setD0(d0);
     m_model->InitHistogram();
-    m_chartSampleHistogram = createChartHistogram(m_model->histogram());
+    m_chartSampleHistogram = createChartHistogram(m_model);
     ui->verticalLayout_2->addWidget(m_chartSampleHistogram);
+    m_isSampleConfigReady = true;
 
 }
 
@@ -41,151 +34,175 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::loadChart(QCustomPlot *customPlot)
+{
+    if (customPlot){
+        ui->verticalLayout_2->addWidget(customPlot);
+    }
+}
 
-QChartView * MainWindow::createChartHistogram(Histogram * histogram)
+QCustomPlot * MainWindow::createChartHistogram(Model * model)
 {
 
+    // Prepare model
+    clearLayout();
+    m_model->InitHistogram();
+    model->histogram()->calcChi();
 
-    histogram->calcChi();
-    QBarSet *set0 = new QBarSet("Observed");
-    QBarSet *set1 = new QBarSet("Expected");
-    uint64_t maxYValue = histogram->MaxFrequency() + (0.1 *  histogram->MaxFrequency());
+
+    // Chart stuff
+
+     QVector<double> x_observed,y_observed,x_expected,y_expected;
+    uint64_t maxYValue = model->histogram()->MaxFrequency() + (0.2 *  model->histogram()->MaxFrequency());
+    uint32_t maxXValue;
 
 
-    for (const  auto& item : histogram->observedMerged()){
-        *set0 << item.second;
+    for (const  auto & item :  model->histogram()->observedMerged()){
+       x_observed.push_back(item.first); // value
+       y_observed.push_back(item.second); // frequency
     }
-    for (const  auto& item : histogram->expectedMerged()){
-        *set1 << item.second;
+    for (const  auto & item :  model->histogram()->expectedMerged()){
+        x_expected.push_back(item.first); // value
+        y_expected.push_back(item.second); // frequency
     }
+    maxXValue = x_expected.back();
 
 
-    QBarSeries *series = new QBarSeries();
+    QCustomPlot * customPlot = new QCustomPlot();
+    customPlot->yAxis->setRange(0, maxYValue );
+    QCPBars *expected = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+    QCPBars *observed = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+
+
+     observed->setName("Observed");
+     observed->setPen(QPen(Qt::blue));
+     observed->setBrush(QBrush(QColor(54, 98, 186)));
+
+     expected->setPen(QPen(QColor(232, 74, 74)));
+     expected->setBrush(QBrush(QColor(232, 74, 74,100)));
+     observed->setWidth(0.5);
+     expected->setWidth(0.8);
+     expected->setName("Expected");
+
+
+     QVector<double> ticks;
+     QVector<QString> labels;
+     for (const auto & value: x_observed){
+         ticks << value;
+         labels << QString::number(value);
+     }
+     QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+     textTicker->addTicks(ticks, labels);
+     customPlot->xAxis->setTicker(textTicker);
+     customPlot->xAxis->setRange(-1, maxXValue + 1);
+    // customPlot->setName("Discrete Distribution Sample");
+
+    expected->setData(x_expected,y_expected);
+     observed->setData(x_observed,y_observed);
+
+
+     customPlot->legend->setVisible(true);
+     customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+     customPlot->legend->setBrush(QColor(255, 255, 255, 100));
+     customPlot->legend->setBorderPen(Qt::NoPen);
+     QFont legendFont = font();
+     legendFont.setPointSize(10);
+     customPlot->legend->setFont(legendFont);
+     customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
 
 
-    series->append(set0);
-    //series->append(set1);
-    series->append(set1);
 
 
-
-
-    QChart *chart = new QChart();
-    QString info = "Sample size: " + QString::number(histogram->sampleSize()) +
-            "\t Chi-sqaure: " + QString::number(histogram->chi()) + "\t Degrees of freedom: " +
-            QString::number(histogram->df()) + "\t P-value: " + QString::number(histogram->pvalue());
-
-
+    QString info = "Sample size: " + QString::number(model->histogram()->sampleSize()) +
+            "\t Chi-sqaure: " + QString::number(model->histogram()->chi()) + "\t Degrees of freedom: " +
+            QString::number(model->histogram()->df()) + "\t P-value: " + QString::number(model->histogram()->pvalue());
 
     ui->txtDistributionInfo->setText(info);
 
-    chart->addSeries(series);
-    chart->setTitle("Discrete Distribution Sample");
 
-    chart->setAnimationOptions(QChart::SeriesAnimations);
-    chart->setAnimationOptions(QChart::GridAxisAnimations);
+    return customPlot;
+
+}
+
+QCustomPlot *MainWindow::createPlevelsGraph(Model  * model)
+
+{
+    // Prepare model
+    clearLayout();
+    m_model->InitHistogram();
+    m_model->InitPlevelsIntervals();
+    m_model->createPlevelsSample();
+
+    QCustomPlot * customPlot = new QCustomPlot();
 
 
-    QStringList categories;
+    QVector<double> x_observedCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
+    QVector<double> y_observedCDF  = QVector<double>(model->plevelObservedCDF().begin(),model->plevelObservedCDF().end());
 
-    for (const  auto& item : histogram->observedMerged()){
-        categories << QString::number(item.first);
+
+    QVector<double> x_empiricalCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
+    QVector<double> y_empiricalCDF  = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
+
+    x_observedCDF.insert(0,0);
+    y_observedCDF.insert(0,0);
+
+    x_empiricalCDF.insert(0,0);
+    y_empiricalCDF.insert(0,0);
+
+
+    customPlot->addGraph();
+    customPlot->graph(0)->setData(x_observedCDF,y_observedCDF);
+    customPlot->graph(0)->setName("Observed Plevels CDF");
+    //customPlot->graph(0)->setPen(QPen(QColor(227, 27, 27).lighter(500)));
+    customPlot->graph(0)->setPen(QPen(Qt::blue));
+
+    customPlot->addGraph();
+    customPlot->graph(1)->setData(x_empiricalCDF,y_empiricalCDF);
+    customPlot->graph(1)->setName("Empirical Plevels CDF");
+    customPlot->graph(1)->setPen(QPen(Qt::red));
+
+    customPlot->xAxis->setLabel("Plevels CDFs F(x)");
+    customPlot->yAxis->setLabel("x");
+
+
+    QVector<double> ticks;
+    QVector<QString> labels;
+    for (const auto & value: x_empiricalCDF){
+        ticks << value;
+        labels << QString::number(value);
     }
 
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
-    axisX->append(categories);
-    chart->addAxis(axisX, Qt::AlignBottom);
-   //series->attachAxis(axisX);
 
-    QValueAxis *axisY = new QValueAxis();
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+    customPlot->xAxis->setTicker(textTicker);
+    customPlot->xAxis->setRange(0,1.05);
+    customPlot->yAxis->setTicker(textTicker);
+    customPlot->yAxis->setRange(0,1.05);
 
-    axisY->setRange(0,static_cast<uint64_t>(maxYValue));
-    chart->addAxis(axisY, Qt::AlignLeft);
-    //series->attachAxis(axisY);
-
-
-
-
+    customPlot->legend->setVisible(true);
+    customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+    customPlot->legend->setBrush(QColor(255, 255, 255, 100));
+    customPlot->legend->setBorderPen(Qt::NoPen);
 
 
-    chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignBottom);
-    QChartView *chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    return  chartView;
-}
-
-QChartView *MainWindow::createPlevelsChart(Model  * model)
-
-{
-
-    QLineSeries *set0 = new QLineSeries();
-
-    QLineSeries *set1 = new QLineSeries();
-
-    set0->setName("Observed Plevel");
-    set1->setName("Expected Plevel");
-
-     const double maxYValue = 1.0, maxXValue = 1.0;
+    customPlot->legend->setVisible(true);
+    customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+     customPlot->replot();
 
 
-     *set0 << QPointF(0,0);
-     *set1 << QPointF(0,0);
-     for (size_t i = 0; i < model->plevelObservedCDF().size(); ++i){
-         *set0 << QPointF(model->plevelsInteravals().at(i),model->plevelObservedCDF().at(i));
-     }
-
-
-     for (size_t i = 0; i < model->plevelsInteravals().size(); ++i){
-         *set1 << QPointF(model->plevelsInteravals().at(i),model->plevelsInteravals().at(i));
-     }
-
-
-
-     QChart *chart = new QChart();
-
-
-     chart->addSeries(set0);
-     chart->addSeries(set1);
-     chart->setTitle("Plevels CDFs");
      ui->txtDistributionInfo->setText("");
-     chart->setAnimationOptions(QChart::SeriesAnimations);
-     chart->setAnimationOptions(QChart::GridAxisAnimations);
+     return customPlot;
 
-     QValueAxis *axisX = new QValueAxis();
-     QValueAxis *axisY = new QValueAxis();
-
-
-
-     qreal tickInterval = model->plevelsInteravals().at(0);
-     axisX->setTickCount(model->plevelsInteravalsSize() + 1);
-     axisY->setTickCount(model->plevelsInteravalsSize() + 1);
-
-     axisX->setTickInterval(tickInterval);
-
-      axisX->setRange(0.0,maxXValue);
-     axisY->setRange(0.0l,maxYValue);
-
-     chart->addAxis(axisX, Qt::AlignBottom);
-     chart->addAxis(axisY, Qt::AlignLeft);
-
-
-
-     chart->legend()->setVisible(true);
-     chart->legend()->setAlignment(Qt::AlignBottom);
-
-
-     QChartView *chartView = new QChartView(chart);
-     chartView->setRenderHint(QPainter::Antialiasing);
-     return  chartView;
 }
 
-QCustomPlot *MainWindow::createPowerChart(Model *model)
+QCustomPlot *MainWindow::createPowerGraph(Model *model)
 {
 
-
-
+     clearLayout();
+     m_model->InitHistogram();
+     m_model->createPlevelsDistribution();
      QCustomPlot * customPlot = new QCustomPlot();
 
      QVector<double> x = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
@@ -201,143 +218,78 @@ QCustomPlot *MainWindow::createPowerChart(Model *model)
      customPlot->replot();
 
      return customPlot;
-
-
-
-
-
-
-
 }
 
-QCustomPlot *MainWindow::createPowerDependencyChart(Model *model)
+QCustomPlot *MainWindow::createPowerDependencyGraph(Model *model)
 {
 
-
+    // Prepare model
+    clearLayout();
+    m_model->InitHistogram();
+    m_model->createPowerDependencyTable();
 
     QCustomPlot * customPlot = new QCustomPlot();
     QVector<double> x = QVector<double>(model->sampleSizeInterval().begin(),model->sampleSizeInterval().end());
     QVector<double> y  = QVector<double>(model->powerDependency().begin(),model->powerDependency().end());
     customPlot->addGraph();
     customPlot->graph(0)->setData(x,y);
+
     customPlot->xAxis->setLabel("Sample Size");
     customPlot->yAxis->setLabel("Power \t  rate");
     customPlot->xAxis->setRange(0, model->sampleSize());
     customPlot->yAxis->setRange(0, model->maxPowerLevel() + model->maxPowerLevel() * 0.1);
     customPlot->replot();
-
+//    ui->txtDistributionInfo->setText("Power vs. sample size analisys");
     return customPlot;
-
-
-
-
 }
-
-
-
-
-
+// Нажатие кнопки Generate Sample
 void MainWindow::on_actionCreate_triggered()
 {
-
-    Dialog_model * dlg = new Dialog_model(this,m_model);
-
-    dlg->exec();
-
-    if (dlg->result() == QDialog::Accepted) {
-        clearLayout();
-        m_model->InitHistogram();
-        m_model->InitPlevelsIntervals();
-        m_chartSampleHistogram = createChartHistogram(m_model->histogram());
-        if (m_chartSampleHistogram){
-            ui->verticalLayout_2->addWidget(m_chartSampleHistogram);
-        }
+    if (m_isSampleConfigReady){
+        m_chartSampleHistogram = createChartHistogram(m_model);
+        loadChart(m_chartSampleHistogram);
+    } else {
+        on_actionSetSample_triggered();
     }
-
-
-
-    delete dlg;
-
-
-
-
 }
 
 
-
+// Нажатие кнопки Generate P-Levels
 void MainWindow::on_actionGenerate_P_Levels_triggered()
 {
-
-    Dialog_Plevels * dlg = new Dialog_Plevels(this,m_model);
-
-    dlg->exec();
-
-    if (dlg->result() == QDialog::Accepted) {
-        clearLayout();
-        m_model->InitHistogram();
-        m_model->InitPlevelsIntervals();
-        m_model->createPlevelsSample();
-        m_chartPlevels = createPlevelsChart(m_model);
-        if (m_chartPlevels){
-            ui->verticalLayout_2->addWidget(m_chartPlevels);
-        }
+    if (m_isPlevelConfigReady) {
+        m_chartPlevels = createPlevelsGraph(m_model);
+        loadChart(m_chartPlevels);
+    } else {
+        on_actionSetPlevels_triggered();
     }
-
-
-
-    delete dlg;
 }
 
 
 
-
+// Нажатие кнопки Power
 void MainWindow::on_actionPower_triggered()
 {
-
-    Dialog_Power * dlg = new Dialog_Power(this,m_model);
-    dlg->exec();
-    if (dlg->result() == QDialog::Accepted) {
-        clearLayout();
-        m_model->InitHistogram();
-        m_model->InitPlevelsIntervals();
-        m_model->createPlevelsDistribution();
-        m_chartPower = createPowerChart(m_model);
-
-        if (m_chartPower){
-
-             ui->verticalLayout_2->addWidget(m_chartPower);
-        }
+    if (m_isPowerConfigReady){
+        m_chartPower = createPowerGraph(m_model);
+        loadChart(m_chartPower);
+    } else {
+       on_actionSetPower_triggered();
     }
-
-
-
-    delete dlg;
 }
 
-
-void MainWindow::on_actionPower_Analysis_triggered()
+void MainWindow::on_actionGenPower_Analysis_triggered()
 {
-    Dialog_PowerAnalysis * dlg = new Dialog_PowerAnalysis(this,m_model);
 
-    dlg->exec();
+     if (m_isPowerAnalisysConfigReady) {
+         m_chartPowerDependency = createPowerDependencyGraph(m_model);
+         loadChart(m_chartPowerDependency);
 
-     if (dlg->result() == QDialog::Accepted) {
-         clearLayout();
-         m_model->InitHistogram();
-         m_model->createPowerDependencyTable();
-         m_chartPowerDependency = createPowerDependencyChart(m_model);
-
-         if (m_chartPowerDependency){
-              ui->verticalLayout_2->addWidget(m_chartPowerDependency);
-         }
-
+     } else {
+         on_actionSetPower_Analysis_triggered();
      }
 
-    delete dlg;
-
 }
-
-
 
 void MainWindow::clearLayout()
 {
@@ -358,7 +310,58 @@ void MainWindow::clearLayout()
     ui->verticalLayout_2->update();
 }
 
+// Задание конфигурации для генерирования выборки
+void MainWindow::on_actionSetSample_triggered()
+{
+
+    Dialog_model * dlg = new Dialog_model(this,m_model);
+    dlg->exec();
+    if (dlg->result() == QDialog::Accepted) {
+        m_isSampleConfigReady = true;
+        m_chartSampleHistogram = createChartHistogram(m_model);
+        loadChart(m_chartSampleHistogram);
+    }
+    delete dlg;
+
+}
+
+// Задание конфигурации для генерирования выборки P-levels
+void MainWindow::on_actionSetPlevels_triggered()
+{
+    Dialog_Plevels * dlg = new Dialog_Plevels(this,m_model);
+    dlg->exec();
+    if (dlg->result() == QDialog::Accepted) {
+        m_isPlevelConfigReady = true;
+        m_chartPlevels = createPlevelsGraph(m_model);
+        loadChart(m_chartPlevels);
+    }
+    delete dlg;
+}
 
 
+void MainWindow::on_actionSetPower_triggered()
+{
+    Dialog_Power * dlg = new Dialog_Power(this,m_model);
+    dlg->exec();
+    if (dlg->result() == QDialog::Accepted) {
+        m_isPowerConfigReady = true;
+        m_chartPower = createPowerGraph(m_model);
+        loadChart(m_chartPower);
+    }
+    delete dlg;
+}
 
+
+void MainWindow::on_actionSetPower_Analysis_triggered()
+{
+    Dialog_PowerAnalysis * dlg = new Dialog_PowerAnalysis(this,m_model);
+    dlg->exec();
+    if (dlg->result() == QDialog::Accepted) {
+         m_isPowerAnalisysConfigReady = true;
+         m_chartPowerDependency = createPowerDependencyGraph(m_model);
+         loadChart(m_chartPowerDependency);
+
+     }
+    delete dlg;
+}
 

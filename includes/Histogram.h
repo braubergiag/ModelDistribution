@@ -31,7 +31,7 @@ public:
 
     int32_t GetObservedAt(int i ) const {return m_observedMerged.at(i);}
     int32_t GetExpectedAt(int i ) const {return m_expectedMerged.at(i);}
-    int32_t distSize() const;
+    size_t distSize() const;
     int32_t distribSizeMerged() const;
     uint64_t MaxFrequency() const;
     int32_t sampleSize() const;
@@ -74,7 +74,7 @@ private:
     double m_mean = 0;
     int32_t m_df = 0;
     int32_t m_distribSizeMerged = 0;
-    int32_t m_distSize = 0;
+    size_t m_distSize = 0;
     uint64_t m_sampleSize = 0;
 
 

@@ -4,9 +4,7 @@
 #include <QMainWindow>
 #include <QDialog>
 
-#include <QtCharts>
-#include <QChartView>
-#include <QLineSeries>
+
 #include "qcustomplot.h"
 #include "model.h"
 #include "dialog_model.h"
@@ -25,12 +23,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void loadChart (QCustomPlot * customPlot);
 
-
-    QChartView * createChartHistogram(Histogram * histogram);
-    QChartView * createPlevelsChart(Model  * model);
-    QCustomPlot * createPowerChart(Model * model);
-    QCustomPlot * createPowerDependencyChart(Model * model);
+    QCustomPlot * createChartHistogram(Model * model);
+    QCustomPlot * createPlevelsGraph(Model  * model);
+    QCustomPlot * createPowerGraph(Model * model);
+    QCustomPlot * createPowerDependencyGraph(Model * model);
 
     void clearLayout();
 
@@ -43,13 +41,27 @@ private slots:
 
     void on_actionPower_triggered();
 
-    void on_actionPower_Analysis_triggered();
+    void on_actionGenPower_Analysis_triggered();
 
-signals:
-     void signalChart(QChartView * chart);
+    void on_actionSetSample_triggered();
+
+    void on_actionSetPlevels_triggered();
+
+    void on_actionSetPower_triggered();
+
+    void on_actionSetPower_Analysis_triggered();
+
+
 private:
-    QChartView * m_chartSampleHistogram = nullptr;
-    QChartView * m_chartPlevels = nullptr;
+
+    bool m_isSampleConfigReady = false;
+    bool m_isPowerConfigReady = false;
+    bool m_isPlevelConfigReady = false;
+    bool m_isPowerAnalisysConfigReady = false;
+
+
+    QCustomPlot * m_chartSampleHistogram = nullptr;
+    QCustomPlot * m_chartPlevels = nullptr;
     QCustomPlot * m_chartPower = nullptr;
     QCustomPlot * m_chartPowerDependency = nullptr;
     Model * m_model = nullptr;
