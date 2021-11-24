@@ -25,7 +25,7 @@ void Generator::Initialize() {
 void Generator::GenerateSumProbabilities(){
     m_s.resize(m_distSize);
 
-    int i = 0, k = 0;
+    size_t i = 0, k = 0;
     m_s[i] = m_distribution.at(i).second; // d.at(i).second - вероятность для значения i
     while (k < m_distSize - 1) {
         ++k;

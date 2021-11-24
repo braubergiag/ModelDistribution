@@ -20,22 +20,22 @@ Model::~Model()
 
  Distribution Model::getD0() const
 {
-    return d0;
+    return m_d0;
 }
 
 void Model::setD0(const Distribution &newD0)
 {
-    d0 = newD0;
+    m_d0 = newD0;
 }
 
  Distribution Model::getD1() const
 {
-    return d1;
+    return m_d1;
 }
 
 void Model::setD1(const Distribution &newD1)
 {
-    d1 = newD1;
+    m_d1 = newD1;
 }
 
 uint32_t Model::plevelsSize() const
@@ -233,9 +233,9 @@ void Model::InitHistogram()
         delete m_histogram;
     }
 
-    if (d0.getDistributionSize() != 0  && m_generator){
+    if (m_d0.getDistributionSize() != 0  && m_generator){
          m_histogram = new Histogram(m_generator,m_sampleSize);
-         m_histogram->setD0(d0);
+         m_histogram->setD0(m_d0);
 
          m_histogram->Init();
     } else {
@@ -276,6 +276,56 @@ const std::vector<double> &Model::plevelObservedCDFNormalized() const
 const std::vector<double> &Model::plevelDistributionNormalized() const
 {
     return m_plevelDistributionNormalized;
+}
+
+bool Model::isReady() const
+{
+    return m_isReady;
+}
+
+void Model::setIsReady(bool newModelIsReady)
+{
+    m_isReady = newModelIsReady;
+}
+
+const std::string &Model::d0String() const
+{
+    return m_d0String;
+}
+
+void Model::setD0String(const std::string &newD0String)
+{
+    m_d0String = newD0String;
+}
+
+const std::string &Model::d1String() const
+{
+    return m_d1String;
+}
+
+void Model::setD1String(const std::string &newD1String)
+{
+    m_d1String = newD1String;
+}
+
+const std::string &Model::sampleSizesString() const
+{
+    return m_sampleSizesString;
+}
+
+void Model::setSampleSizesString(const std::string &newSampleSizesString)
+{
+    m_sampleSizesString = newSampleSizesString;
+}
+
+const std::string &Model::significanceLevelString() const
+{
+    return m_significanceLevelString;
+}
+
+void Model::setSignificanceLevelString(const std::string &newSignificanceLevelString)
+{
+    m_significanceLevelString = newSignificanceLevelString;
 }
 
 void Model::setSampleSizeInterval(const std::vector<double> &newSampleSizeInterval)

@@ -58,11 +58,9 @@ private slots:
 
 private:
 
-    bool m_isSampleConfigReady = false;
-    bool m_isPowerConfigReady = false;
-    bool m_isPlevelConfigReady = false;
-    bool m_isPowerAnalisysConfigReady = false;
 
+    void Init();
+    void InitDemo();
 
     GraphCreator * m_graphCreator = nullptr;
 

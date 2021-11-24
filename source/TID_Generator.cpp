@@ -14,7 +14,7 @@ TID_Generator::~TID_Generator()
 
 };
 int32_t TID_Generator:: GenerateValue(double alpha)  {
-    int i = 0, k = 0, j = m_distSize - 1;
+    size_t i = 0, k = 0, j = m_distSize - 1;
     while (i < j) {
         k = floor((i + j) / 2);
         if (alpha <= m_s[k]) {

@@ -75,12 +75,31 @@ public:
 
     const std::vector<double> &plevelDistributionNormalized() const;
 
+    bool isReady() const;
+    void setIsReady(bool newModelIsReady);
+
+    const std::string &d0String() const;
+    void setD0String(const std::string &newD0String);
+
+    const std::string &d1String() const;
+    void setD1String(const std::string &newD1String);
+
+    const std::string &sampleSizesString() const;
+    void setSampleSizesString(const std::string &newSampleSizesString);
+
+    const std::string &significanceLevelString() const;
+    void setSignificanceLevelString(const std::string &newSignificanceLevelString);
+
 private:
 
 
-    Distribution d0,d1;
+    Distribution m_d0,m_d1;
     Generator * m_generator = nullptr;
     std::string m_generatorMethod;
+    std::string m_d0String,m_d1String;
+    std::string m_sampleSizesString;
+    std::string m_significanceLevelString;
+    bool m_isReady = false;
     Histogram * m_histogram = nullptr;
 
 

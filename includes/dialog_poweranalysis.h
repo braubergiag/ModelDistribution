@@ -22,6 +22,10 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
+
+    void loadModelConfig(Model * model);
+
+
      Ui::Dialog_PowerAnalysis *ui;
     Model * m_model = nullptr;
     DialogHandler dialogHandler;

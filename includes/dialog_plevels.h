@@ -27,6 +27,10 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
+
+    void loadModelConfig(Model * model);
+
+
     bool checkSamleSize() const;
     Ui::Dialog_Plevels *ui;
     Model * m_model = nullptr;

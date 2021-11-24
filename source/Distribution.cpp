@@ -31,4 +31,6 @@ std::ostream & operator <<(std::ostream& stream,Distribution & distribution) {
     for (size_t i = 0; i < distribution.getDistributionSize(); ++i ){
         stream << i << ' ' << distribution.getProbAt(i) << std::endl;
     }
+
+    return stream;
 }

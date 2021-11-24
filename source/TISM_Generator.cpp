@@ -15,7 +15,7 @@ TISM_Generator::~TISM_Generator()
 
 
 int32_t TISM_Generator::GenerateValue(double alpha)  {
-    int i = 0;
+    size_t i = 0;
     while (alpha > m_s[i] && i < m_distSize - 1){
         i += 1;
     }

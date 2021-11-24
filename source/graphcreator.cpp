@@ -18,7 +18,7 @@ QCustomPlot * GraphCreator::createChartHistogram(Model * model)
     // Chart stuff
 
      QVector<double> x_observed,y_observed,x_expected,y_expected;
-    uint64_t maxYValue = model->histogram()->MaxFrequency() + (0.2 *  model->histogram()->MaxFrequency());
+    uint64_t maxYValue = model->histogram()->MaxFrequency() + (0.3 *  model->histogram()->MaxFrequency());
     uint32_t maxXValue;
 
 
@@ -136,9 +136,11 @@ QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model)
 
     QVector<double> ticks;
     QVector<QString> labels;
-    for (const auto & value: x_empiricalCDF){
-        ticks << value;
-        labels << QString::number(value);
+
+
+    for (qsizetype i = 0; i < x_empiricalCDF.size(); ++i){
+        ticks << x_empiricalCDF[i];
+        labels << QString::number(x_empiricalCDF[i]);
     }
 
 
@@ -181,7 +183,7 @@ QCustomPlot *GraphCreator::createPowerGraph(Model *model)
      model->createPlevelsDistribution();
 
      QCustomPlot * customPlot = new QCustomPlot();
-     QString title = model->isPowerEstimate() ? "Power Estimate" : "Type 1 error Estimate";
+     QString title = model->isPowerEstimate() ? "Power Estimate" : "Type 1 Error Estimate";
      QVector<double> x = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
      QVector<double> y  = QVector<double>(model->plevelDistributionNormalized().begin(),model->plevelDistributionNormalized().end());
      x.insert(0,0);
@@ -235,7 +237,7 @@ QCustomPlot *GraphCreator::createPowerDependencyGraph(Model *model)
     QVector<double> y  = QVector<double>(model->powerDependencyNormalized().begin(),model->powerDependencyNormalized().end());
     customPlot->addGraph();
     customPlot->graph(0)->setData(x,y);
-    QString graphTitle = QString("Power vs.sample size \t [ alpha = ") + QString::number(model->significaneLevel()) + QString("]");
+    QString graphTitle = QString("Power vs.sample size");
     customPlot->graph(0)->setName(graphTitle);
 
     customPlot->xAxis->setLabel("Sample Size");
@@ -272,6 +274,7 @@ QCustomPlot *GraphCreator::createPowerDependencyGraph(Model *model)
 
     QString info = "Plevels sample size: " + QString::number(model->plevelsSize())
             +   "\t Method: " + QString::fromStdString(model->generatorMethod());
+            +  "\t [ alpha = " + QString::number(model->significaneLevel()) + "]";
     customPlot->plotLayout()->insertRow(0);
     customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(customPlot, info, QFont("sans", 10, QFont::Normal)));
     customPlot->replot();

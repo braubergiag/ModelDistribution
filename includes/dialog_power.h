@@ -24,6 +24,9 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
+
+    void loadModelConfig(Model * model);
+
     Ui::Dialog_Power *ui;
     DialogHandler dialogHandler;
     Model * m_model = nullptr;

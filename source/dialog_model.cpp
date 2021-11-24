@@ -9,7 +9,8 @@ Dialog_model::Dialog_model(QWidget *parent, Model * model) :
 {
     ui->setupUi(this);
 
-//    loadModelConfig(model);
+
+    loadModelConfig(model);
 
 
 }
@@ -25,28 +26,30 @@ Dialog_model::~Dialog_model()
 void Dialog_model::on_buttonBox_accepted()
 {
     uint64_t sampleSize = 0;
-    if (!dialogHandler.checkSamleSize(ui->lbSampleSize)) reject();
     sampleSize = ui->lbSampleSize->text().toUInt();
-     std::vector<double> p0 = dialogHandler.parseTxtToVector(ui->txtProbs);
-    if (p0.size() == 0) {
+    std::vector<double> p0 = dialogHandler.parseTxtToVector(ui->txtProbs);
+    if (p0.size() == 0 || !dialogHandler.checkSamleSize(ui->lbSampleSize) ) {
         reject();
         return;
 
     }
-    Generator * generator;
 
+    Generator * generator;
+    Distribution d0(p0);
     if (ui->rbTID->isChecked()) {;
-         generator = new TID_Generator(Distribution(p0));
+         generator = new TID_Generator(d0);
          m_model->setGeneratorMethod(ui->rbTID->text().toStdString());
     } else if (ui->rbTIS->isChecked()) {
-        generator = new  TISM_Generator(Distribution(p0));
+        generator = new  TISM_Generator(d0);
         m_model->setGeneratorMethod(ui->rbTIS->text().toStdString());
 
     }
 
+    m_model->setD0String(ui->txtProbs->text().toStdString());
+    m_model->setD1String(ui->txtProbs->text().toStdString());
     m_model->setGenerator(generator);
     m_model->setSampleSize(sampleSize);
-    m_model->setD0(Distribution(p0));
+    m_model->setD0(d0);
 
 
 
@@ -65,17 +68,18 @@ void Dialog_model::on_buttonBox_rejected()
 
 
 
-//void Dialog_model::loadModelConfig(Model *model)
-//{
-//    ui->lbSampleSize->setText(QString::number(model->sampleSize()));
-//    QString d0 = "";
-//    for (const auto & p : model->getD0().p()){
-//        qDebug() << p << " ";
-//        d0.append(QString::fromStdString(std::to_string()));
-//        d0.append(",");
-//    }
-//    ui->txtProbs->setText(d0);
-//}
+void Dialog_model::loadModelConfig(Model *model)
+{
+    ui->lbSampleSize->setText(QString::number(model->sampleSize()));
+    ui->txtProbs->setText(QString::fromStdString(model->d0String()));
+
+    if (model->generatorMethod() == ui->rbTID->text().toStdString()){
+        ui->rbTID->setChecked(true);
+    } else if (model->generatorMethod() == ui->rbTIS->text().toStdString()){
+        ui->rbTIS->setChecked(true);
+    }
+
+}
 
 
 

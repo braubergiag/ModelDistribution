@@ -2,11 +2,12 @@
 #include "ui_dialog_poweranalysis.h"
 
 Dialog_PowerAnalysis::Dialog_PowerAnalysis(QWidget *parent,Model * model) :
-    QDialog(parent),
-    ui(new Ui::Dialog_PowerAnalysis),
-    m_model(model)
+    QDialog(parent),ui(new Ui::Dialog_PowerAnalysis),m_model(model)
 {
+
+
     ui->setupUi(this);
+    loadModelConfig(model);
 }
 
 Dialog_PowerAnalysis::~Dialog_PowerAnalysis()
@@ -43,8 +44,12 @@ void Dialog_PowerAnalysis::on_buttonBox_accepted()
     m_model->setGenerator(generator);
     m_model->setSampleSize(plevelsSize);
     m_model->setD0(d0);
+    m_model->setD0String(ui->txtD0Probs->text().toStdString());
+    m_model->setD1String(ui->txtD1Probs->text().toStdString());
     m_model->setSignificaneLevel(ui->cbSignLevel->currentText().toDouble());
+    m_model->setSignificanceLevelString(ui->cbSignLevel->currentText().toStdString());
     m_model->setSampleSizeInterval(sampleSizesInterval);
+    m_model->setSampleSizesString(ui->txtSampleSizes->text().toStdString());
     m_model->setPlevelsSize(plevelsSize);
     qDebug() << "Significance Level " << m_model->significaneLevel();
 
@@ -59,4 +64,31 @@ void Dialog_PowerAnalysis::on_buttonBox_rejected()
     reject();
 
 }
+
+void Dialog_PowerAnalysis::loadModelConfig(Model *model)
+{
+
+    ui->txtD0Probs->setText(QString::fromStdString(model->d0String()));
+    ui->txtD1Probs->setText(QString::fromStdString(model->d1String()));
+    ui->lbPlevelsSize->setText(QString::number(model->plevelsSize()));
+    if (model->generatorMethod() == ui->rbTID->text().toStdString()){
+        ui->rbTID->setChecked(true);
+    } else if (model->generatorMethod() == ui->rbTIS->text().toStdString()){
+        ui->rbTIS->setChecked(true);
+    }
+
+
+    ui->txtSampleSizes->setText(QString::fromStdString(model->sampleSizesString()));
+    int index = ui->cbSignLevel->findText(QString::fromStdString(model->significanceLevelString()));
+
+    if (index != -1){
+         ui->cbSignLevel->setCurrentIndex(index);
+    }
+
+
+
+  }
+
+
+
 
