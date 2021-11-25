@@ -34,7 +34,7 @@ void Dialog_model::on_buttonBox_accepted()
 
     }
 
-    Generator * generator;
+    Generator * generator = nullptr;
     Distribution d0(p0);
     if (ui->rbTID->isChecked()) {;
          generator = new TID_Generator(d0);

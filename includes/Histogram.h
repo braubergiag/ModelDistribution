@@ -6,7 +6,7 @@
 
 #include "Generator.h"
 #include "Distribution.h"
-
+#include <QDebug>
 class Histogram {
 public:
     Histogram(Generator *  sampleGenerator,size_t sampleSize);
@@ -14,7 +14,6 @@ public:
 
     void GenerateSample();
     void calcChi();
-
 
     void PrintObservedFreq();
 
@@ -40,6 +39,10 @@ public:
     const std::map<int32_t, uint64_t> observedMerged() const;
 
     const std::map<int32_t, double> expectedMerged() const;
+
+    const std::map<int32_t, uint64_t> observed() const;
+
+    const std::map<int32_t, double> expected() const;
 
     double chi() const;
 
@@ -68,6 +71,8 @@ private:
 
     Generator *  m_sampleGenerator;
     Distribution m_d0;
+
+    bool m_isReady = false;
 
     double m_alpha = 0;
     double m_chiValue = 0;

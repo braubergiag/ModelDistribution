@@ -53,61 +53,7 @@ Histogram *Model::histogram() const
     return m_histogram;
 }
 
-void Model::createPlevelsSample()
-{
 
-
-    m_plevelObservedCDF.clear();
-    m_plevelObservedCDF.resize(m_plevelsInteravalsSize,0);
-
-    // Здесь вычисляется, сколько значений pvalue попало в каждую ячейку
-    for (size_t i = 0; i < m_plevelsSize; ++i){
-        m_histogram->calcChi();
-        m_currentPvalue = m_histogram->pvalue();
-
-       for (size_t j = 0; j < m_plevelsInteravals.size(); ++j) {
-           if (m_currentPvalue <= m_plevelsInteravals[j]) {
-               ++m_plevelObservedCDF[j];
-               break;
-           }
-       }
-    }
-
-    // Тест
-    qDebug() << "m_plevelObservedCDF \n";
-    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
-         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDF[i] << "\n";
-    }
-
-
-    // Нормировка
-    m_plevelObservedCDFNormalized.clear();
-    m_plevelObservedCDFNormalized.resize(m_plevelObservedCDF.size(),0);
-    for (size_t i = 0; i < m_plevelObservedCDFNormalized.size(); ++i) {
-        m_plevelObservedCDFNormalized[i] = static_cast<double>(m_plevelObservedCDF[i]) /  m_plevelsSize;
-    }
-
-    // Cчитаем накопленные вероятности
-
-        for (size_t i = 1; i < m_plevelObservedCDFNormalized.size(); ++i) {
-            m_plevelObservedCDFNormalized[i] += m_plevelObservedCDFNormalized[i - 1];
-        }
-
-
-
-
-
-    // Тест
-    qDebug() << "m_plevelObservedCDF \n";
-    for (size_t i = 0; i < m_plevelObservedCDFNormalized.size(); ++i) {
-         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDFNormalized[i] << "\n";
-    }
-
-
-
-
-
-}
 
 void Model::createPlevelsDistribution()
 {
@@ -115,16 +61,21 @@ void Model::createPlevelsDistribution()
     m_plevelDistribution.resize(m_plevelsInteravalsSize,0);
 
 
-   for (size_t i = 0 ; i < m_plevelsInteravals.size(); ++ i){
-       for (size_t j = 0; j < m_plevelsSize; ++j){
-           m_histogram->calcChi();
-           m_currentPvalue = m_histogram->pvalue();
-           if (m_currentPvalue < m_plevelsInteravals[i]) {
-               ++m_plevelDistribution[i];
-               continue;
-           }
+
+
+    for (size_t i = 0; i < m_plevelsSize; ++i){
+        m_histogram->calcChi();
+        m_currentPvalue = m_histogram->pvalue();
+
+        for (size_t j = 0; j < m_plevelsInteravals.size(); ++j) {
+            if (m_currentPvalue < m_plevelsInteravals[j]) {
+                ++m_plevelDistribution[j];
+                break;
+            }
+        }
     }
-   }
+
+
 
 
    m_plevelDistributionNormalized.clear();
@@ -133,6 +84,16 @@ void Model::createPlevelsDistribution()
    for (size_t i = 0; i < m_plevelDistribution.size(); ++i) {
        m_plevelDistributionNormalized[i] = static_cast<double>(m_plevelDistribution[i]) / m_plevelsSize;
    }
+
+
+   for (size_t i = 1; i < m_plevelDistributionNormalized.size(); ++i) {
+       m_plevelDistributionNormalized[i] += m_plevelDistributionNormalized[i - 1];
+   }
+
+
+
+
+
    // Тест
    qDebug() << "m_plevelDistribution \n";
    for (size_t i = 0; i < m_plevelDistributionNormalized.size(); ++i) {
@@ -244,16 +205,8 @@ void Model::InitHistogram()
 
 }
 
-void Model::PrintPlevels() const
-{
-    qDebug() << "m_plevelObservedCDF \n";
-    for (size_t i = 0; i < m_plevelObservedCDF.size(); ++i) {
-         qDebug() << "Step: " << i << " Value :" << m_plevelObservedCDF[i] << "\n";
-    }
 
-}
-
- std::string Model::generatorMethod() const
+const std::string& Model::generatorMethod() const
 {
     return m_generatorMethod;
 }
@@ -268,10 +221,6 @@ const std::vector<double> &Model::powerDependencyNormalized() const
     return m_powerDependencyNormalized;
 }
 
-const std::vector<double> &Model::plevelObservedCDFNormalized() const
-{
-    return m_plevelObservedCDFNormalized;
-}
 
 const std::vector<double> &Model::plevelDistributionNormalized() const
 {
@@ -355,12 +304,6 @@ const std::vector<double> &Model::plevelsInteravals() const
 {
     return m_plevelsInteravals;
 }
-
-const std::vector<uint32_t> &Model::plevelObservedCDF() const
-{
-    return m_plevelObservedCDF;
-}
-
 
 
 const std::vector<uint32_t> &Model::plevelDistribution() const

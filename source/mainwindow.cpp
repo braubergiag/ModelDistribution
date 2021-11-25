@@ -20,7 +20,6 @@ void MainWindow::Init()
 
     // Cоздаём заготовки для моделей
     m_modelSample = new Model();
-    m_modelPlevels = new Model();
     m_modelPower = new Model();
     m_modelPowerAnalysis = new Model();
     m_graphCreator = new GraphCreator();
@@ -44,10 +43,6 @@ void MainWindow::InitDemo()
 
 
 
-    m_modelPlevels->setSampleSize(100);
-    m_modelPlevels->setPlevelsSize(1000);
-    m_modelPlevels->setD0String("0.1,0.2,0.3,0.4");
-
 
     m_modelPower->setSampleSize(100);
     m_modelPower->setPlevelsSize(1000);
@@ -59,7 +54,7 @@ void MainWindow::InitDemo()
 
     m_modelPowerAnalysis->setPlevelsSize(1000);
     m_modelPowerAnalysis->setSignificanceLevelString("0.05");
-    m_modelPowerAnalysis->setSampleSizesString("100,500,1000,2000,5000,7500,10000");
+    m_modelPowerAnalysis->setSampleSizesString("50,100,200,300,500,1000,2000");
     m_modelPowerAnalysis->setD0String("0.1,0.2,0.3,0.4");
     m_modelPowerAnalysis->setD1String("0.1,0.25,0.4,0.25");
 
@@ -78,7 +73,6 @@ MainWindow::~MainWindow()
     delete m_modelPlevels;
     delete m_modelPower;
     delete m_modelPowerAnalysis;
-    delete m_chartPlevels;
     delete m_chartSampleHistogram;
     delete m_chartPowerDependency;
     delete m_chartPower;
@@ -108,18 +102,6 @@ void MainWindow::on_actionCreateSampleChart_triggered()
     }
 }
 
-
-// Нажатие кнопки Generate P-Levels
-void MainWindow::on_actionGenerate_P_Levels_triggered()
-{
-    if (m_modelPlevels->isReady()) {
-          clearLayout();
-        m_chartPlevels = m_graphCreator->createPlevelsGraph(m_modelPlevels);
-        loadChart(m_chartPlevels);
-    } else {
-        on_actionSetPlevels_triggered();
-    }
-}
 
 
 
@@ -153,11 +135,8 @@ void MainWindow::clearLayout()
 {
 
 
-    if (m_chartPlevels) {
-        ui->verticalLayout_2->removeWidget(m_chartPlevels);
-        m_chartPlevels = nullptr;
 
-    } else if (m_chartSampleHistogram) {
+    if (m_chartSampleHistogram) {
         ui->verticalLayout_2->removeWidget(m_chartSampleHistogram);
         m_chartSampleHistogram =  nullptr;
     } else if (m_chartPower) {
@@ -190,21 +169,7 @@ void MainWindow::on_actionSetSample_triggered()
 
 }
 
-// Задание конфигурации для генерирования выборки P-levels
-void MainWindow::on_actionSetPlevels_triggered()
-{
-    Dialog_Plevels * dlg = new Dialog_Plevels(this,m_modelPlevels);
-    dlg->exec();
-    if (dlg->result() == QDialog::Accepted) {
-        m_modelPlevels->setIsReady(true);
-        clearLayout();
-        m_chartPlevels = m_graphCreator->createPlevelsGraph(m_modelPlevels);;
-        loadChart(m_chartPlevels);
-    } else if (dlg->result() == QDialog::Rejected){
-        qDebug() << "Rejected.\n";
-    }
-    delete dlg;
-}
+
 
 
 void MainWindow::on_actionSetPower_triggered()

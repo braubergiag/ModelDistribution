@@ -1,4 +1,4 @@
-QT       += core gui printsupport
+QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++17
@@ -18,7 +18,6 @@ SOURCES += \
     source/TID_Generator.cpp \
     source/TISM_Generator.cpp \
     source/dialog_model.cpp \
-    source/dialog_plevels.cpp \
     source/main.cpp \
     source/mainwindow.cpp \
     source/model.cpp \
@@ -36,20 +35,19 @@ HEADERS += \
      includes/TID_Generator.h \
      includes/TISM_Generator.h \
      includes/dialog_model.h \
-     includes/dialog_plevels.h \
      includes/mainwindow.h \
      includes/model.h \
      includes/probdist.h \
 
 FORMS += \
     ui/dialog_model.ui \
-    ui/dialog_plevels.ui \
     ui/dialog_power.ui \
     ui/dialog_poweranalysis.ui \
     ui/mainwindow.ui
 
 INCLUDEPATH+= includes/
 INCLUDEPATH+= ui/
+RC_ICONS = icon.ico
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

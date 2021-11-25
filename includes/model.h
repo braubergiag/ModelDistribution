@@ -27,14 +27,19 @@ public:
     double significaneLevel() const;
     double maxPowerLevel() const;
     bool isPowerEstimate() const;
-
+    bool isReady() const;
 
     const std::vector<double> &plevelsInteravals() const;
-    const std::vector<uint32_t> &plevelObservedCDF() const;
     const std::vector<uint32_t> &plevelDistribution() const;
-
     const std::vector<double> &sampleSizeInterval() const;
-
+    const std::vector<double> &powerDependencyNormalized() const;
+    const std::vector<double> &plevelObservedCDFNormalized() const;
+    const std::vector<double> &plevelDistributionNormalized() const;
+    const std::string &d0String() const;
+    const std::string &d1String() const;
+    const std::string &sampleSizesString() const;
+    const std::string &significanceLevelString() const;
+    const std::string &generatorMethod() const;
 
 
     // Setters
@@ -46,6 +51,12 @@ public:
     void setSignificaneLevel(double newSignificaneLevel);
     void setIsPowerEstimate(bool newIsPowerEstimate);
     void setSampleSizeInterval(const std::vector<double> &newSampleSizeInterval);
+    void setGeneratorMethod( std::string newGeneratorMethod);
+    void setIsReady(bool newModelIsReady);
+    void setD0String(const std::string &newD0String);
+    void setD1String(const std::string &newD1String);
+    void setSampleSizesString(const std::string &newSampleSizesString);
+    void setSignificanceLevelString(const std::string &newSignificanceLevelString);
 
 
 
@@ -60,36 +71,6 @@ public:
 
     //Test
     void PrintPlevels() const;
-
-
-
-
-
-
-     std::string generatorMethod() const;
-    void setGeneratorMethod( std::string newGeneratorMethod);
-
-    const std::vector<double> &powerDependencyNormalized() const;
-
-    const std::vector<double> &plevelObservedCDFNormalized() const;
-
-    const std::vector<double> &plevelDistributionNormalized() const;
-
-    bool isReady() const;
-    void setIsReady(bool newModelIsReady);
-
-    const std::string &d0String() const;
-    void setD0String(const std::string &newD0String);
-
-    const std::string &d1String() const;
-    void setD1String(const std::string &newD1String);
-
-    const std::string &sampleSizesString() const;
-    void setSampleSizesString(const std::string &newSampleSizesString);
-
-    const std::string &significanceLevelString() const;
-    void setSignificanceLevelString(const std::string &newSignificanceLevelString);
-
 private:
 
 
@@ -119,8 +100,6 @@ private:
     std::vector<uint32_t> m_powerDependency; // Мощности для кажого объема выборки
     std::vector<double> m_powerDependencyNormalized;
     std::vector<double> m_plevelsInteravals; //  Значения теоретической ф.р plevels
-    std::vector<uint32_t> m_plevelObservedCDF; // Значения эмирической ф.р plevels
-    std::vector<double> m_plevelObservedCDFNormalized;
     std::vector<uint32_t> m_plevelDistribution; // Мощности/Ошибки первого рода для каждого уровня alpha
     std::vector<double> m_plevelDistributionNormalized;
 

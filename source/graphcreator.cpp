@@ -22,11 +22,11 @@ QCustomPlot * GraphCreator::createChartHistogram(Model * model)
     uint32_t maxXValue;
 
 
-    for (const  auto & item :  model->histogram()->observedMerged()){
+    for (const  auto & item :  model->histogram()->observed()){
        x_observed.push_back(item.first); // value
        y_observed.push_back(item.second); // frequency
     }
-    for (const  auto & item :  model->histogram()->expectedMerged()){
+    for (const  auto & item :  model->histogram()->expected()){
         x_expected.push_back(item.first); // value
         y_expected.push_back(item.second); // frequency
     }
@@ -94,111 +94,66 @@ QCustomPlot * GraphCreator::createChartHistogram(Model * model)
 
 }
 
-QCustomPlot *GraphCreator::createPlevelsGraph(Model  * model)
-
-{
-    // Prepare model
-    model->InitHistogram();
-    model->InitPlevelsIntervals();
-    model->createPlevelsSample();
-
-    QCustomPlot * customPlot = new QCustomPlot();
-
-
-    QVector<double> x_observedCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
-    QVector<double> y_observedCDF  = QVector<double>(model->plevelObservedCDFNormalized().begin(),model->plevelObservedCDFNormalized().end());
-
-
-    QVector<double> x_empiricalCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
-    QVector<double> y_empiricalCDF  = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
-
-    x_observedCDF.insert(0,0);
-    y_observedCDF.insert(0,0);
-
-    x_empiricalCDF.insert(0,0);
-    y_empiricalCDF.insert(0,0);
-
-
-    customPlot->addGraph();
-    customPlot->graph(0)->setData(x_observedCDF,y_observedCDF);
-    customPlot->graph(0)->setName("Observed Plevels CDF");
-    //customPlot->graph(0)->setPen(QPen(QColor(227, 27, 27).lighter(500)));
-    customPlot->graph(0)->setPen(QPen(Qt::blue));
-
-    customPlot->addGraph();
-    customPlot->graph(1)->setData(x_empiricalCDF,y_empiricalCDF);
-    customPlot->graph(1)->setName("Empirical Plevels CDF");
-    customPlot->graph(1)->setPen(QPen(Qt::red));
-    customPlot->xAxis->setLabel("x");
-    customPlot->yAxis->setLabel("Plevels CDFs \t F(x)");
-
-
-
-    QVector<double> ticks;
-    QVector<QString> labels;
-
-
-    for (qsizetype i = 0; i < x_empiricalCDF.size(); ++i){
-        ticks << x_empiricalCDF[i];
-        labels << QString::number(x_empiricalCDF[i]);
-    }
-
-
-    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
-    textTicker->addTicks(ticks, labels);
-    customPlot->xAxis->setTicker(textTicker);
-    customPlot->xAxis->setRange(0,1.05);
-    customPlot->yAxis->setTicker(textTicker);
-    customPlot->yAxis->setRange(0,1.05);
-
-
-
-
-    customPlot->legend->setVisible(true);
-    customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
-    customPlot->legend->setBrush(QColor(255, 255, 255, 100));
-    customPlot->legend->setBorderPen(Qt::NoPen);
-//    QFont legendFont = font();
-//    legendFont.setPointSize(10);
-//    customPlot->legend->setFont(legendFont);
-    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-
-
-
-    QString info =  "Sample size: " + QString::number(model->histogram()->sampleSize())
-            + "\t Plevels sample size: " + QString::number(model->plevelsSize())
-            + "\t Method: " + QString::fromStdString(model->generatorMethod());
-
-    customPlot->plotLayout()->insertRow(0);
-    customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(customPlot, info, QFont("sans", 10, QFont::Normal)));
-     customPlot->replot();
-     return customPlot;
-
-}
 
 QCustomPlot *GraphCreator::createPowerGraph(Model *model)
 {
 
      model->InitHistogram();
      model->createPlevelsDistribution();
+     model->InitPlevelsIntervals();
+//     model->createPlevelsSample();
 
      QCustomPlot * customPlot = new QCustomPlot();
      QString title = model->isPowerEstimate() ? "Power Estimate" : "Type 1 Error Estimate";
      QVector<double> x = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
      QVector<double> y  = QVector<double>(model->plevelDistributionNormalized().begin(),model->plevelDistributionNormalized().end());
+
+
+     QVector<double> x_empiricalCDF = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
+     QVector<double> y_empiricalCDF  = QVector<double>(model->plevelsInteravals().begin(),model->plevelsInteravals().end());
+     x_empiricalCDF.insert(0,0);
+     y_empiricalCDF.insert(0,0);
+
+
      x.insert(0,0);
      y.insert(0,0);
+
+
+
+
      customPlot->addGraph();
-     customPlot->graph(0)->setData(x,y);
-     customPlot->graph(0)->setName(title);
+     customPlot->graph(0)->setData(x_empiricalCDF,y_empiricalCDF);
+     customPlot->graph(0)->setName("Theoretical Plevels CDF");
+     customPlot->graph(0)->setPen(QPen(Qt::red));
 
 
 
-     customPlot->xAxis->setLabel("Alpha");
-     customPlot->yAxis->setLabel("PLevel \t rate");
+     customPlot->addGraph();
+     customPlot->graph(1)->setData(x,y);
+     customPlot->graph(1)->setName("Empirical Plevels CDF");
+
+
+
+     customPlot->xAxis->setLabel("x");
+     customPlot->yAxis->setLabel("F(x)");
      customPlot->xAxis->setRange(0,1);
      customPlot->yAxis->setRange(0,1);
+     QVector<double> ticks;
+     QVector<QString> labels;
 
+
+     for (size_t i = 0; i < model->plevelsInteravals().size(); ++i){
+         ticks << model->plevelsInteravals().at(i);
+         labels << QString::number(model->plevelsInteravals().at(i));
+     }
+
+
+     QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+     textTicker->addTicks(ticks, labels);
+     customPlot->xAxis->setTicker(textTicker);
+     customPlot->xAxis->setRange(0,1.05);
+     customPlot->yAxis->setTicker(textTicker);
+     customPlot->yAxis->setRange(0,1.05);
 
 
 
@@ -215,7 +170,10 @@ QCustomPlot *GraphCreator::createPowerGraph(Model *model)
 
      QString info = "Sample size: " + QString::number(model->histogram()->sampleSize())
              +  "\t Plevels sample size: " + QString::number(model->plevelsSize())
-             +  "\t Method: " + QString::fromStdString(model->generatorMethod());
+             +  "\t Method: " + QString::fromStdString(model->generatorMethod())
+
+                    + "\t [ Estimate:" + title + " ]";
+
 
 
      customPlot->plotLayout()->insertRow(0);

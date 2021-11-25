@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>722</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuModel">
@@ -34,7 +34,6 @@
      <string>Model</string>
     </property>
     <addaction name="actionSetSample"/>
-    <addaction name="actionSetPlevels"/>
     <addaction name="actionSetPower"/>
     <addaction name="actionSetPower_Analysis"/>
     <addaction name="separator"/>
@@ -54,8 +53,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionCreateSampleChart"/>
-   <addaction name="separator"/>
-   <addaction name="actionGenerate_P_Levels"/>
    <addaction name="separator"/>
    <addaction name="actionPower"/>
    <addaction name="separator"/>
@@ -84,7 +81,7 @@
   </action>
   <action name="actionPower">
    <property name="text">
-    <string>Generate Power graph</string>
+    <string>Power || Type 1 Error Estimate </string>
    </property>
    <property name="toolTip">
     <string>Generate Power  chart</string>
@@ -92,7 +89,7 @@
   </action>
   <action name="actionGenPower_Analysis">
    <property name="text">
-    <string>Generate Power Analysis graph</string>
+    <string>Generate Power Analysis Graph</string>
    </property>
   </action>
   <action name="actionSetSample">
@@ -100,19 +97,14 @@
     <string>Sample</string>
    </property>
   </action>
-  <action name="actionSetPlevels">
-   <property name="text">
-    <string>P-levels</string>
-   </property>
-  </action>
   <action name="actionSetPower">
    <property name="text">
-    <string>Power</string>
+    <string>Power || Type 1 Error Estimate </string>
    </property>
   </action>
   <action name="actionSetPower_Analysis">
    <property name="text">
-    <string>Power Analisys</string>
+    <string>Power Analysis</string>
    </property>
   </action>
   <action name="actionQuit">

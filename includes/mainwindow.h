@@ -9,7 +9,7 @@
 #include "qcustomplot.h"
 #include "model.h"
 #include "dialog_model.h"
-#include "dialog_plevels.h"
+
 #include "dialog_power.h"
 #include "dialog_poweranalysis.h"
 
@@ -39,7 +39,6 @@ private slots:
 
     void on_actionCreateSampleChart_triggered();
 
-    void on_actionGenerate_P_Levels_triggered();
 
     void on_actionPower_triggered();
 
@@ -47,7 +46,7 @@ private slots:
 
     void on_actionSetSample_triggered();
 
-    void on_actionSetPlevels_triggered();
+
 
     void on_actionSetPower_triggered();
 
@@ -65,7 +64,6 @@ private:
     GraphCreator * m_graphCreator = nullptr;
 
     QCustomPlot * m_chartSampleHistogram = nullptr;
-    QCustomPlot * m_chartPlevels = nullptr;
     QCustomPlot * m_chartPower = nullptr;
     QCustomPlot * m_chartPowerDependency = nullptr;
 

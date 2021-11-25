@@ -24,14 +24,15 @@ void Histogram::GenerateSample()  {
 
 
 void Histogram::calcChi(){
-    double squareDiff = 0;
+    double squareDiff = 0,diff = 0;
     GenerateSample();
     mergeExeptectedValues();
 
     m_chiValue = 0;
     for (auto &  [key,expected_value] : m_expectedMerged) {
-        if (m_observed.count(key) != 0) {
-            squareDiff = (m_observedMerged.at(key) - expected_value) * (m_observedMerged.at(key) - expected_value);
+        if (m_observedMerged.count(key) != 0) {
+            diff = (m_observedMerged.at(key) - expected_value);
+            squareDiff =  diff * diff;
             m_chiValue += squareDiff / expected_value;
         }
         else {
@@ -41,12 +42,36 @@ void Histogram::calcChi(){
     }
 
 
-    CHI(1, m_df, m_chiValue, m_pvalue);
-    std::cout << "Pvalue << " << m_pvalue << std::endl;
+    CHI(1, m_distribSizeMerged - 1, m_chiValue, m_pvalue);
+   //std::cout << "Pvalue << " << m_pvalue << std::endl;
 
-//    m_mean += m_chiValue;
+    double m_expectedMergedSum = 0, m_observedMergedSum = 0;
+    for (auto [k,v]: m_expectedMerged) {
+        m_expectedMergedSum += v;
+    }
+    for (auto [k,v]: m_observedMerged) {
+        m_observedMergedSum += v;
+    }
+    qDebug() << "m_expectedMergedSum" << m_expectedMergedSum  << "\n";
+    qDebug() << "m_observedMergedSum" << m_observedMergedSum  << "\n";
+    assert(m_observedMergedSum == m_sampleSize);
+
+
+   m_mean += m_chiValue;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Histogram::mergeExeptectedValues()
 {
@@ -55,23 +80,32 @@ void Histogram::mergeExeptectedValues()
     m_observedMerged = m_observed;
     m_distribSizeMerged = m_distSize;
 
-    for (int i = m_distSize - 1; i >= 0; i--) {
-        if (m_expectedMerged[i] < NMAX) {
-            if (i != 0){
-                m_expectedMerged[i - 1] += m_expectedMerged[i];
-                m_observedMerged[i - 1] += m_observedMerged[i];
-            } else {
+    size_t prev_index = 0;
+    for (size_t i = 0; i < m_distSize; ++i) {
+        if (m_expectedMerged.at(i) < NMAX) {
+            if (i != ( m_distSize - 1)){
                 m_expectedMerged[i + 1] += m_expectedMerged[i];
                 m_observedMerged[i + 1] += m_observedMerged[i];
+
+            } else {
+                m_expectedMerged[prev_index] += m_expectedMerged[i];
+                m_observedMerged[prev_index] += m_observedMerged[i];
+
+
 
             }
             m_observedMerged.erase(i);
             m_expectedMerged.erase(i);
-
             m_distribSizeMerged -= 1;
 
+        } else {
+            prev_index = i;
         }
+
     }
+
+
+
 
 
 }
@@ -100,6 +134,16 @@ const std::map<int32_t, uint64_t> Histogram::observedMerged() const
 const std::map<int32_t, double> Histogram::expectedMerged() const
 {
     return m_expectedMerged;
+}
+
+const std::map<int32_t, uint64_t> Histogram::observed() const
+{
+    return m_observed;
+}
+
+const std::map<int32_t, double> Histogram::expected() const
+{
+    return m_expected;
 }
 
 double Histogram::chi() const
@@ -147,6 +191,7 @@ void Histogram::Init()
         m_df = m_distSize -1;
         if (m_sampleSize != 0){
              CalculateExpectedFrequency();
+             m_isReady = true;
         }
 
     }
@@ -207,15 +252,23 @@ void Histogram::PrintPlevels() {
 
 
 uint64_t Histogram::MaxFrequency() const{
-    uint64_t currentMax_1 = 0;
+    uint64_t currentMax_1 = 0, currentMax_2 = 0;
 
-    for(auto it = m_expectedMerged.cbegin(); it != m_expectedMerged.cend(); ++it ) {
+    for(auto it = m_expected.cbegin(); it != m_expected.cend(); ++it ) {
         if (it ->second > currentMax_1) {
             currentMax_1 = it->second;
         }
     }
 
-    return static_cast<uint64_t>(currentMax_1);
+
+    for(auto it = m_observed.cbegin(); it != m_observed.cend(); ++it ) {
+        if (it ->second > currentMax_2) {
+            currentMax_2 = it->second;
+        }
+    }
+
+    uint64_t maxValue = currentMax_1 > currentMax_2 ? currentMax_1 : currentMax_2;
+    return static_cast<uint64_t>(maxValue);
 
 
 }
